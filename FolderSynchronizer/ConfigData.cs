@@ -1,6 +1,5 @@
 ﻿namespace MusicLibrarySynchronizer
 {
-    // Read from appsettings.json/secrets.json
     public class ConfigData
     {
         public string LocalFolderName { get; set; }

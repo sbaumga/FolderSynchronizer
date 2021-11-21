@@ -24,13 +24,8 @@
             AWSFileManager = awsFileManager;
         }
 
-        private string GetRemotePath(string localPath)
-        {
-            return localPath.Replace(FolderName + @"\", "");
-        }
-
         private void FileCreated(object sender, FileSystemEventArgs e)
-        {
+        { 
             var remotePath = GetRemotePath(e.FullPath);
             // Upload file
             AWSFileManager.UploadFileAsync(e.FullPath, remotePath);
@@ -56,6 +51,11 @@
             AWSFileManager.RenameFileAsync(localPath, oldRemotePath, newRemotePath);
 
             // Add message to queue?
+        }
+
+        private string GetRemotePath(string localPath)
+        {
+            return localPath.Replace(FolderName + @"\", "");
         }
     }
 }
