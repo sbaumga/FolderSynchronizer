@@ -1,4 +1,4 @@
-namespace MusicLibrarySynchronizer
+namespace FolderSynchronizer
 {
     public class Worker : BackgroundService
     {

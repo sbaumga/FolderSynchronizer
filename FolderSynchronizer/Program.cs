@@ -1,4 +1,5 @@
-using MusicLibrarySynchronizer;
+using FolderSynchronizer;
+using FolderSynchronizer.TypeMapping;
 
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((context, builder) => {
@@ -10,10 +11,9 @@ IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, builder) => {
         // TODO: use the proper .AddConfiguration method?
         builder.AddTransient(provider => context.Configuration.GetSection("ConfigData").Get<ConfigData>());
+        ServiceRegistation.Register(builder);
 
         builder.AddHostedService<Worker>();
-        builder.AddTransient<FolderWatcher>();
-        builder.AddTransient<AWSFileManager>();
     })
     .Build();
 

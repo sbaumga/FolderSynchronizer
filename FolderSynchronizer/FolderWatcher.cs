@@ -1,4 +1,6 @@
-﻿namespace MusicLibrarySynchronizer
+﻿using FolderSynchronizer.AWS;
+
+namespace FolderSynchronizer
 {
     public class FolderWatcher
     {
@@ -27,7 +29,7 @@
         private void FileCreated(object sender, FileSystemEventArgs e)
         { 
             var remotePath = GetRemotePath(e.FullPath);
-            // Upload file
+            
             AWSFileManager.UploadFileAsync(e.FullPath, remotePath);
 
             // Add message to queue?
@@ -36,7 +38,7 @@
         private void FileDeleted(object sender, FileSystemEventArgs e)
         {
             var remotePath = GetRemotePath(e.FullPath);
-            // Delete file
+            
             AWSFileManager.DeleteFileAsync(remotePath);
 
             // Add message to queue?
@@ -47,7 +49,7 @@
             var localPath = e.FullPath;
             var oldRemotePath = GetRemotePath(e.OldFullPath);
             var newRemotePath = GetRemotePath(e.FullPath);
-            // Rename file
+            
             AWSFileManager.RenameFileAsync(localPath, oldRemotePath, newRemotePath);
 
             // Add message to queue?
