@@ -1,4 +1,5 @@
 ﻿using Amazon.S3.Model;
+using FolderSynchronizer.AWS.Implementations;
 
 namespace FolderSynchronizer.AWS
 {
@@ -8,12 +9,12 @@ namespace FolderSynchronizer.AWS
 
         private AWSPathManager PathManager { get; }
         private AWSClientCreator ClientCreator { get; }
-        private AWSActionTaker ActionTaker { get; }
+        private AWSActionTakerImp ActionTaker { get; }
         private LocalFileLister LocalFileLister { get; }
 
         private string BucketName { get; }
 
-        public AWSFileUploader(ILogger<AWSFileUploader> logger, AWSPathManager pathManager, AWSClientCreator clientCreator, AWSActionTaker actionTaker, LocalFileLister localFileLister, ConfigData configData)
+        public AWSFileUploader(ILogger<AWSFileUploader> logger, AWSPathManager pathManager, AWSClientCreator clientCreator, AWSActionTakerImp actionTaker, LocalFileLister localFileLister, ConfigData configData)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
@@ -50,7 +51,7 @@ namespace FolderSynchronizer.AWS
                 ContentType = "text/plain"
             };
 
-            var response = await ActionTaker.DoS3ActionAsync(async () => await client.PutObjectAsync(putRequest));
+            var response = await ActionTaker.DoS3Action(async () => await client.PutObjectAsync(putRequest));
             if (!response.HttpStatusCode.HasFlag(System.Net.HttpStatusCode.OK))
             {
                 throw new Exception(response.ToString());

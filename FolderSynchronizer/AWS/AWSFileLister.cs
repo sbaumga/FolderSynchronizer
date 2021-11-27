@@ -1,15 +1,16 @@
 ﻿using Amazon.S3.Model;
+using FolderSynchronizer.AWS.Implementations;
 
 namespace FolderSynchronizer.AWS
 {
     public class AWSFileLister
     {
         private AWSClientCreator ClientCreator { get; }
-        private AWSActionTaker ActionTaker { get; }
+        private AWSActionTakerImp ActionTaker { get; }
 
         private string BucketName { get; }
 
-        public AWSFileLister(AWSClientCreator clientCreator, AWSActionTaker actionTaker, ConfigData configData)
+        public AWSFileLister(AWSClientCreator clientCreator, AWSActionTakerImp actionTaker, ConfigData configData)
         {
             ClientCreator = clientCreator ?? throw new ArgumentNullException(nameof(clientCreator));
             ActionTaker = actionTaker ?? throw new ArgumentNullException(nameof (actionTaker));
@@ -38,7 +39,7 @@ namespace FolderSynchronizer.AWS
                 BucketName = BucketName
             };
 
-            var response = await ActionTaker.DoS3ActionAsync(async () => await client.ListObjectsV2Async(request));
+            var response = await ActionTaker.DoS3Action(async () => await client.ListObjectsV2Async(request));
             return response.S3Objects;
         }
 

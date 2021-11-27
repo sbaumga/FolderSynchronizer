@@ -1,4 +1,6 @@
 ﻿using FolderSynchronizer.AWS;
+using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.AWS.Implementations;
 
 namespace FolderSynchronizer.TypeMapping
 {
@@ -25,7 +27,7 @@ namespace FolderSynchronizer.TypeMapping
 
             builder.AddTransient<AWSClientCreator>();
             builder.AddTransient<AWSPathManager>();
-            builder.AddTransient<AWSActionTaker>();
+            builder.AddTransient<AWSActionTaker, AWSActionTakerImp>();
         }
     }
 }

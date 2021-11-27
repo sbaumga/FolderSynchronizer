@@ -1,11 +1,13 @@
 ﻿using Amazon.S3;
+using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.AWS.Exceptions;
 using FolderSynchronizer.Extensions;
 
-namespace FolderSynchronizer.AWS
+namespace FolderSynchronizer.AWS.Implementations
 {
-    public class AWSActionTaker
+    public class AWSActionTakerImp : AWSActionTaker
     {
-        public TResponse DoS3ActionAsync<TResponse>(Func<TResponse> s3Action)
+        public TResponse DoS3Action<TResponse>(Func<TResponse> s3Action)
         {
             try
             {
@@ -21,11 +23,11 @@ namespace FolderSynchronizer.AWS
         {
             if (exception.IsCredentialException())
             {
-                return new Exception("Check the provided AWS Credentials.");
+                return new AWSException("Check the provided AWS Credentials.", exception);
             }
             else
             {
-                return new Exception("Error occurred: " + exception.Message);
+                return new AWSException("Error occurred: " + exception.Message, exception);
             }
         }
     }

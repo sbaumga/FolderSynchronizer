@@ -1,4 +1,5 @@
 ﻿using Amazon.S3.Model;
+using FolderSynchronizer.AWS.Implementations;
 
 namespace FolderSynchronizer.AWS
 {
@@ -7,11 +8,11 @@ namespace FolderSynchronizer.AWS
         private AWSPathManager PathManager { get; }
         private AWSClientCreator ClientCreator { get; }
         private AWSFileLister FileLister { get; }
-        private AWSActionTaker ActionTaker { get; }
+        private AWSActionTakerImp ActionTaker { get; }
 
         private string BucketName { get; }
 
-        public AWSFileDeleter(AWSPathManager pathManager, AWSClientCreator clientCreator, AWSFileLister fileLister, AWSActionTaker actionTaker, ConfigData configData)
+        public AWSFileDeleter(AWSPathManager pathManager, AWSClientCreator clientCreator, AWSFileLister fileLister, AWSActionTakerImp actionTaker, ConfigData configData)
         {
             PathManager = pathManager ?? throw new ArgumentNullException(nameof(pathManager));
             ClientCreator = clientCreator ?? throw new ArgumentNullException(nameof(clientCreator));
@@ -53,7 +54,7 @@ namespace FolderSynchronizer.AWS
                 Key = remotePath,
             };
 
-            var response = await ActionTaker.DoS3ActionAsync(async () => await client.DeleteObjectAsync(deleteRequest));
+            var response = await ActionTaker.DoS3Action(async () => await client.DeleteObjectAsync(deleteRequest));
             if (!response.HttpStatusCode.HasFlag(System.Net.HttpStatusCode.OK))
             {
                 throw new Exception(response.ToString());
