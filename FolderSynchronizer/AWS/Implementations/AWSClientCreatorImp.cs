@@ -1,14 +1,15 @@
 ﻿using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
+using FolderSynchronizer.AWS.Abstractions;
 
-namespace FolderSynchronizer.AWS
+namespace FolderSynchronizer.AWS.Implementations
 {
-    public class AWSClientCreator
+    public class AWSClientCreatorImp : IAWSClientCreator
     {
         private AWSCredentials AWSCredentials { get; }
 
-        public AWSClientCreator(ConfigData configData)
+        public AWSClientCreatorImp(ConfigData configData)
         {
             if (configData == null)
             {

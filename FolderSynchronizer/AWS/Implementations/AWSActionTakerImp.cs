@@ -5,13 +5,21 @@ using FolderSynchronizer.Extensions;
 
 namespace FolderSynchronizer.AWS.Implementations
 {
-    public class AWSActionTakerImp : AWSActionTaker
+    public class AWSActionTakerImp : IAWSActionTaker
     {
-        public TResponse DoS3Action<TResponse>(Func<TResponse> s3Action)
+        private IAWSClientCreator ClientCreator { get; }
+
+        public AWSActionTakerImp(IAWSClientCreator clientCreator)
+        {
+            ClientCreator = clientCreator ?? throw new ArgumentNullException(nameof(clientCreator));
+        }
+
+        public TResponse DoS3Action<TResponse>(Func<AmazonS3Client, TResponse> s3Action)
         {
             try
             {
-                return s3Action();
+                var client = ClientCreator.GetS3Client();
+                return s3Action(client);
             }
             catch (AmazonS3Exception amazonS3Exception)
             {

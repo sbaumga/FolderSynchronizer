@@ -1,5 +1,5 @@
 ﻿using Amazon.S3.Model;
-using FolderSynchronizer.AWS.Implementations;
+using FolderSynchronizer.AWS.Abstractions;
 
 namespace FolderSynchronizer.AWS
 {
@@ -8,18 +8,16 @@ namespace FolderSynchronizer.AWS
         private ILogger Logger { get; }
 
         private AWSPathManager PathManager { get; }
-        private AWSClientCreator ClientCreator { get; }
-        private AWSActionTakerImp ActionTaker { get; }
+        private IAWSActionTaker ActionTaker { get; }
         private LocalFileLister LocalFileLister { get; }
 
         private string BucketName { get; }
 
-        public AWSFileUploader(ILogger<AWSFileUploader> logger, AWSPathManager pathManager, AWSClientCreator clientCreator, AWSActionTakerImp actionTaker, LocalFileLister localFileLister, ConfigData configData)
+        public AWSFileUploader(ILogger<AWSFileUploader> logger, AWSPathManager pathManager, IAWSActionTaker actionTaker, LocalFileLister localFileLister, ConfigData configData)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             PathManager = pathManager ?? throw new ArgumentNullException(nameof(pathManager));
-            ClientCreator = clientCreator ?? throw new ArgumentNullException(nameof(clientCreator));
             ActionTaker = actionTaker ?? throw new ArgumentNullException(nameof(actionTaker));
             LocalFileLister = localFileLister ?? throw new ArgumentNullException();
 
@@ -41,8 +39,6 @@ namespace FolderSynchronizer.AWS
 
             LogUploadFileMessage(localPath, remotePath);
 
-            var client = ClientCreator.GetS3Client();
-
             var putRequest = new PutObjectRequest
             {
                 BucketName = BucketName,
@@ -51,7 +47,7 @@ namespace FolderSynchronizer.AWS
                 ContentType = "text/plain"
             };
 
-            var response = await ActionTaker.DoS3Action(async () => await client.PutObjectAsync(putRequest));
+            var response = await ActionTaker.DoS3Action(async (client) => await client.PutObjectAsync(putRequest));
             if (!response.HttpStatusCode.HasFlag(System.Net.HttpStatusCode.OK))
             {
                 throw new Exception(response.ToString());

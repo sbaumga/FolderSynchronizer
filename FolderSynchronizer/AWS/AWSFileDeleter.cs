@@ -1,21 +1,19 @@
 ﻿using Amazon.S3.Model;
-using FolderSynchronizer.AWS.Implementations;
+using FolderSynchronizer.AWS.Abstractions;
 
 namespace FolderSynchronizer.AWS
 {
     public class AWSFileDeleter
     {
         private AWSPathManager PathManager { get; }
-        private AWSClientCreator ClientCreator { get; }
         private AWSFileLister FileLister { get; }
-        private AWSActionTakerImp ActionTaker { get; }
+        private IAWSActionTaker ActionTaker { get; }
 
         private string BucketName { get; }
 
-        public AWSFileDeleter(AWSPathManager pathManager, AWSClientCreator clientCreator, AWSFileLister fileLister, AWSActionTakerImp actionTaker, ConfigData configData)
+        public AWSFileDeleter(AWSPathManager pathManager, AWSFileLister fileLister, IAWSActionTaker actionTaker, ConfigData configData)
         {
             PathManager = pathManager ?? throw new ArgumentNullException(nameof(pathManager));
-            ClientCreator = clientCreator ?? throw new ArgumentNullException(nameof(clientCreator));
             FileLister = fileLister ?? throw new ArgumentNullException(nameof(fileLister));
             ActionTaker = actionTaker ?? throw new ArgumentNullException(nameof(actionTaker));
 
@@ -46,15 +44,13 @@ namespace FolderSynchronizer.AWS
 
         private async Task DeleteFile(string remotePath)
         {
-            var client = ClientCreator.GetS3Client();
-
             var deleteRequest = new DeleteObjectRequest
             {
                 BucketName = BucketName,
                 Key = remotePath,
             };
 
-            var response = await ActionTaker.DoS3Action(async () => await client.DeleteObjectAsync(deleteRequest));
+            var response = await ActionTaker.DoS3Action(async (client) => await client.DeleteObjectAsync(deleteRequest));
             if (!response.HttpStatusCode.HasFlag(System.Net.HttpStatusCode.OK))
             {
                 throw new Exception(response.ToString());

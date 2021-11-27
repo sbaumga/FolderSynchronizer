@@ -25,9 +25,9 @@ namespace FolderSynchronizer.TypeMapping
             builder.AddTransient<AWSFileSyncChecker>();
             builder.AddTransient<AWSBulkFileSynchronizer>();
 
-            builder.AddTransient<AWSClientCreator>();
+            builder.AddTransient<IAWSClientCreator, AWSClientCreatorImp>();
             builder.AddTransient<AWSPathManager>();
-            builder.AddTransient<AWSActionTaker, AWSActionTakerImp>();
+            builder.AddTransient<IAWSActionTaker, AWSActionTakerImp>();
         }
     }
 }
