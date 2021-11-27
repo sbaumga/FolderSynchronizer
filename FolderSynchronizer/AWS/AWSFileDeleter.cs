@@ -25,16 +25,21 @@ namespace FolderSynchronizer.AWS
             BucketName = configData.BucketName;
         }
 
-        public async Task DeleteFileAsync(string remotePath)
+        public async Task DeleteRemoteFileFromLocalFile(string localPath)
         {
-            var sanitisedPath = PathManager.SanitizeRemotePath(remotePath);
+            var remotePath = PathManager.GetRemotePath(localPath);
+            await DeleteRemoteFileAsync(remotePath);
+        }
+
+        public async Task DeleteRemoteFileAsync(string remotePath)
+        {
             if (PathManager.IsPathFile(remotePath))
             {
-                await DeleteFile(sanitisedPath);
+                await DeleteFile(remotePath);
             }
             else
             {
-                await DeleteFolder(sanitisedPath);
+                await DeleteFolder(remotePath);
             }
         }
 

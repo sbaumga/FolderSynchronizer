@@ -27,37 +27,27 @@ namespace FolderSynchronizer
         }
 
         private void FileCreated(object sender, FileSystemEventArgs e)
-        { 
-            var remotePath = GetRemotePath(e.FullPath);
-            
-            AWSFileManager.UploadFileAsync(e.FullPath, remotePath);
+        {            
+            AWSFileManager.UploadFileAsync(e.FullPath);
 
             // Add message to queue?
         }
 
         private void FileDeleted(object sender, FileSystemEventArgs e)
         {
-            var remotePath = GetRemotePath(e.FullPath);
-            
-            AWSFileManager.DeleteFileAsync(remotePath);
+            AWSFileManager.DeleteRemoteFileFromLocalFileAsync(e.FullPath);
 
             // Add message to queue?
         }
 
         private void FileRenamed(object sender, RenamedEventArgs e)
         {
-            var localPath = e.FullPath;
-            var oldRemotePath = GetRemotePath(e.OldFullPath);
-            var newRemotePath = GetRemotePath(e.FullPath);
+            var oldLocalPath = e.OldFullPath;
+            var newLocalPath = e.FullPath;
             
-            AWSFileManager.RenameFileAsync(localPath, oldRemotePath, newRemotePath);
+            AWSFileManager.RenameFileAsync(oldLocalPath, newLocalPath);
 
             // Add message to queue?
-        }
-
-        private string GetRemotePath(string localPath)
-        {
-            return localPath.Replace(FolderName + @"\", "");
         }
     }
 }

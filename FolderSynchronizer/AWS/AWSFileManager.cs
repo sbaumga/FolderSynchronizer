@@ -13,19 +13,19 @@
             Renamer = renamer ?? throw new ArgumentNullException(nameof(renamer));
         }
 
-        public async Task UploadFileAsync(string localPath, string remotePath)
+        public async Task UploadFileAsync(string localPath)
         {
-            await Uploader.UploadFileAsync(localPath, remotePath);
+            await Uploader.UploadFileAsync(localPath);
         }
 
-        public async Task DeleteFileAsync(string remotePath)
+        public async Task DeleteRemoteFileFromLocalFileAsync(string localPath)
         {
-            await Deleter.DeleteFileAsync(remotePath);
+            await Deleter.DeleteRemoteFileAsync(localPath);
         }
 
-        public async Task RenameFileAsync(string localPath, string oldRemotePath, string newRemotePath)
+        public async Task RenameFileAsync(string oldLocalPath, string newLocalPath)
         {
-            await Renamer.RenameFileAsync(localPath, oldRemotePath, newRemotePath);
+            await Renamer.RenameFileAsync(oldLocalPath, newLocalPath);
         }
     }
 }

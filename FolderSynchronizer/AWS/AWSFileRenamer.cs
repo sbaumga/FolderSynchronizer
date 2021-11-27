@@ -13,21 +13,33 @@
             PathManager = pathManager ?? throw new ArgumentNullException(nameof(pathManager));
         }
 
-        public async Task RenameFileAsync(string localPath, string oldRemotePath, string newRemotePath)
+        public async Task RenameFileAsync(string oldLocalPath, string newLocalPath)
         {
             // Renaming a file in the AWS console says it creates a copy with the new name, then deletes the old one
             // We'll do the same thing here
+            await UploadRenamedFile(newLocalPath);
 
-            if (PathManager.IsPathFile(localPath)) { 
-                // TODO: create a queue for failed requests?
-                await Uploader.UploadFileAsync(localPath, newRemotePath);
-            } else
+            await DeleteRenamedFile(oldLocalPath);
+        }
+
+        private async Task UploadRenamedFile(string localPath)
+        {
+            if (PathManager.IsPathFile(localPath))
             {
-                await Uploader.UploadFolderAsync(localPath, newRemotePath);
+                // TODO: create a queue for failed requests?
+                await Uploader.UploadFileAsync(localPath);
             }
+            else
+            {
+                await Uploader.UploadFolderAsync(localPath);
+            }
+        }
 
+        private async Task DeleteRenamedFile(string oldLocalPath)
+        {
+            var oldRemotePath = PathManager.GetRemotePath(oldLocalPath);
             // TODO: better error reporting? What should be reported if we have the new file created, but can't delete the old file?
-            await Deleter.DeleteFileAsync(oldRemotePath);
+            await Deleter.DeleteRemoteFileAsync(oldRemotePath);
         }
     }
 }

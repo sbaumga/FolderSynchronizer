@@ -24,6 +24,13 @@ namespace FolderSynchronizer.AWS
 
         public async Task<IEnumerable<string>> ListFilesAsync()
         {
+            var s3Objects = await GetS3Objects();
+            var result = s3Objects.Select(x => x.Key);
+            return result;
+        }
+
+        private async Task<IList<S3Object>> GetS3Objects()
+        {
             var client = ClientCreator.GetS3Client();
 
             var request = new ListObjectsV2Request
@@ -32,14 +39,30 @@ namespace FolderSynchronizer.AWS
             };
 
             var response = await ActionTaker.DoS3ActionAsync(async () => await client.ListObjectsV2Async(request));
-            var result = response.S3Objects.Select(x => x.Key);
-            return result;
+            return response.S3Objects;
         }
 
         public async Task<IEnumerable<string>> ListFilteredFilesAsync(string startOfPath)
         {
             var result = (await ListFilesAsync()).Where(s => s.StartsWith(startOfPath));
             return result;
+        }
+
+        public async Task<IEnumerable<FileData>> GetFileDataAsync()
+        {
+            var s3Objects = await GetS3Objects();
+            var data = s3Objects.Select(o => MakeFileDataFroms3Object(o));
+            return data;
+        }
+
+        private FileData MakeFileDataFroms3Object(S3Object s3Object)
+        {
+            var data = new FileData
+            {
+                Path = s3Object.Key,
+                LastModifiedDate = s3Object.LastModified.ToUniversalTime(),
+            };
+            return data;
         }
     }
 }

@@ -9,16 +9,18 @@ namespace FolderSynchronizer.AWS
         private AWSPathManager PathManager { get; }
         private AWSClientCreator ClientCreator { get; }
         private AWSActionTaker ActionTaker { get; }
+        private LocalFileLister LocalFileLister { get; }
 
         private string BucketName { get; }
 
-        public AWSFileUploader(ILogger<AWSFileUploader> logger, AWSPathManager pathManager, AWSClientCreator clientCreator, AWSActionTaker actionTaker, ConfigData configData)
+        public AWSFileUploader(ILogger<AWSFileUploader> logger, AWSPathManager pathManager, AWSClientCreator clientCreator, AWSActionTaker actionTaker, LocalFileLister localFileLister, ConfigData configData)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             PathManager = pathManager ?? throw new ArgumentNullException(nameof(pathManager));
             ClientCreator = clientCreator ?? throw new ArgumentNullException(nameof(clientCreator));
             ActionTaker = actionTaker ?? throw new ArgumentNullException(nameof(actionTaker));
+            LocalFileLister = localFileLister ?? throw new ArgumentNullException();
 
             if (configData == null)
             {
@@ -27,14 +29,14 @@ namespace FolderSynchronizer.AWS
             BucketName = configData.BucketName;
         }
 
-        public async Task UploadFileAsync(string localPath, string remotePath)
+        public async Task UploadFileAsync(string localPath)
         {
             if (!PathManager.IsPathFile(localPath))
             {
                 return;
             }
 
-            remotePath = PathManager.SanitizeRemotePath(remotePath);
+            var remotePath = PathManager.GetRemotePath(localPath);
 
             LogUploadFileMessage(localPath, remotePath);
 
@@ -67,15 +69,15 @@ namespace FolderSynchronizer.AWS
             Logger.LogInformation($"File {localPath} successfully uploaded to {remotePath}");
         }
 
-        public async Task UploadFolderAsync(string localPath, string remotePath)
+        public async Task UploadFolderAsync(string localPath)
         {
+            var remotePath = PathManager.GetRemotePath(localPath);
             LogUploadFolderMessage(localPath, remotePath);
 
-            var files = PathManager.GetFilePathsForFolder(localPath);
+            var files = LocalFileLister.GetFilePathsForFolder(localPath);
             var uploadTasks = files.Select(f =>
             {
-                var fileRemotePath = PathManager.SanitizeRemotePath(f.Replace(localPath, remotePath));
-                return UploadFileAsync(f, fileRemotePath);
+                return UploadFileAsync(f);
             });
             await Task.WhenAll(uploadTasks);
 
