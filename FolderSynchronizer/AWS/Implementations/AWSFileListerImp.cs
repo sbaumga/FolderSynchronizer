@@ -1,15 +1,15 @@
 ﻿using Amazon.S3.Model;
 using FolderSynchronizer.AWS.Abstractions;
 
-namespace FolderSynchronizer.AWS
+namespace FolderSynchronizer.AWS.Implementations
 {
-    public class AWSFileLister
+    public class AWSFileListerImp : IAWSFileLister
     {
         private IAWSActionTaker ActionTaker { get; }
 
         private string BucketName { get; }
 
-        public AWSFileLister(IAWSActionTaker actionTaker, ConfigData configData)
+        public AWSFileListerImp(IAWSActionTaker actionTaker, ConfigData configData)
         {
             ActionTaker = actionTaker ?? throw new ArgumentNullException(nameof(actionTaker));
 
