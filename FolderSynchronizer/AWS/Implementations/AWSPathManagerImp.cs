@@ -1,10 +1,12 @@
-﻿namespace FolderSynchronizer.AWS
+﻿using FolderSynchronizer.AWS.Abstractions;
+
+namespace FolderSynchronizer.AWS.Implementations
 {
-    public class AWSPathManager
+    public class AWSPathManagerImp : IAWSPathManager
     {
         public string FolderName { get; }
 
-        public AWSPathManager(ConfigData configData)
+        public AWSPathManagerImp(ConfigData configData)
         {
             if (configData == null)
             {

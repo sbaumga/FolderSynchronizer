@@ -7,13 +7,13 @@ namespace FolderSynchronizer.AWS
     {
         private ILogger Logger { get; }
 
-        private AWSPathManager PathManager { get; }
+        private IAWSPathManager PathManager { get; }
         private IAWSActionTaker ActionTaker { get; }
         private LocalFileLister LocalFileLister { get; }
 
         private string BucketName { get; }
 
-        public AWSFileUploader(ILogger<AWSFileUploader> logger, AWSPathManager pathManager, IAWSActionTaker actionTaker, LocalFileLister localFileLister, ConfigData configData)
+        public AWSFileUploader(ILogger<AWSFileUploader> logger, IAWSPathManager pathManager, IAWSActionTaker actionTaker, LocalFileLister localFileLister, ConfigData configData)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 

@@ -5,13 +5,13 @@ namespace FolderSynchronizer.AWS
 {
     public class AWSFileDeleter
     {
-        private AWSPathManager PathManager { get; }
+        private IAWSPathManager PathManager { get; }
         private IAWSFileLister FileLister { get; }
         private IAWSActionTaker ActionTaker { get; }
 
         private string BucketName { get; }
 
-        public AWSFileDeleter(AWSPathManager pathManager, IAWSFileLister fileLister, IAWSActionTaker actionTaker, ConfigData configData)
+        public AWSFileDeleter(IAWSPathManager pathManager, IAWSFileLister fileLister, IAWSActionTaker actionTaker, ConfigData configData)
         {
             PathManager = pathManager ?? throw new ArgumentNullException(nameof(pathManager));
             FileLister = fileLister ?? throw new ArgumentNullException(nameof(fileLister));

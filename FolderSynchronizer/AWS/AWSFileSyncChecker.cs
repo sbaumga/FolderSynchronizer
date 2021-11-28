@@ -7,9 +7,9 @@ namespace FolderSynchronizer.AWS
         private string LocalFolder { get; }
         private LocalFileLister LocalFileLister { get; }
         private IAWSFileLister AWSFileLister { get; }
-        private AWSPathManager PathManager { get; }
+        private IAWSPathManager PathManager { get; }
 
-        public AWSFileSyncChecker(ConfigData configData, LocalFileLister localFileLister, IAWSFileLister awsFileLister, AWSPathManager awsPathManager)
+        public AWSFileSyncChecker(ConfigData configData, LocalFileLister localFileLister, IAWSFileLister awsFileLister, IAWSPathManager awsPathManager)
         {
             if (configData == null)
             {
