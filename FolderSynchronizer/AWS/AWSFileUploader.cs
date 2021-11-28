@@ -1,4 +1,5 @@
 ﻿using Amazon.S3.Model;
+using FolderSynchronizer.Abstractions;
 using FolderSynchronizer.AWS.Abstractions;
 
 namespace FolderSynchronizer.AWS
@@ -9,11 +10,11 @@ namespace FolderSynchronizer.AWS
 
         private IAWSPathManager PathManager { get; }
         private IAWSActionTaker ActionTaker { get; }
-        private LocalFileLister LocalFileLister { get; }
+        private ILocalFileLister LocalFileLister { get; }
 
         private string BucketName { get; }
 
-        public AWSFileUploader(ILogger<AWSFileUploader> logger, IAWSPathManager pathManager, IAWSActionTaker actionTaker, LocalFileLister localFileLister, ConfigData configData)
+        public AWSFileUploader(ILogger<AWSFileUploader> logger, IAWSPathManager pathManager, IAWSActionTaker actionTaker, ILocalFileLister localFileLister, ConfigData configData)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 

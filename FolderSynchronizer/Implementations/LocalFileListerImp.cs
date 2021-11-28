@@ -1,6 +1,8 @@
-﻿namespace FolderSynchronizer
+﻿using FolderSynchronizer.Abstractions;
+
+namespace FolderSynchronizer.Implementations
 {
-    public class LocalFileLister
+    public class LocalFileListerImp : ILocalFileLister
     {
         public IEnumerable<string> GetFilePathsForFolder(string folderPath)
         {
