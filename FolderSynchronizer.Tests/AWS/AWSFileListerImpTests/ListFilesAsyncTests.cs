@@ -1,34 +1,12 @@
-﻿using Amazon.S3;
-using Amazon.S3.Model;
-using FolderSynchronizer.AWS.Abstractions;
-using FolderSynchronizer.AWS.Implementations;
-using Moq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Shouldly;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace FolderSynchronizer.Tests.AWS.AWSFileListerImpTests
 {
-    [TestFixture]
-    public class ListFilesAsyncTests
+    public class ListFilesAsyncTests : AWSFileListerImpTestBase
     {
-        private Mock<IAWSActionTaker> MockActionTaker { get; set; }
-
-        private ConfigData ConfigData { get; } = new ConfigData { BucketName = "TestBucket" };
-
-        private AWSFileListerImp FileLister { get; set; }
-
-        [SetUp]
-        public void SetUp()
-        {
-            MockActionTaker = new Mock<IAWSActionTaker>(MockBehavior.Strict);
-
-            FileLister = new AWSFileListerImp(MockActionTaker.Object, ConfigData);
-        }
-
         [Test]
         public async Task EmptyListTest()
         {
@@ -37,16 +15,6 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileListerImpTests
             var result = await FileLister.ListFilesAsync();
 
             result.ShouldBeEmpty();
-        }
-
-        private void SetUpMockActionTakerToReturnResponseWithS3Objects(params S3Object[] s3Objects)
-        {
-            var fakeResponse = new ListObjectsV2Response
-            {
-                S3Objects = new List<S3Object>(s3Objects)
-            };
-
-            MockActionTaker.Setup(s => s.DoS3Action(It.IsAny<Func<AmazonS3Client, Task<ListObjectsV2Response>>>())).Returns(Task.FromResult(fakeResponse));
         }
 
         [Test]
@@ -58,15 +26,6 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileListerImpTests
             var result = await FileLister.ListFilesAsync();
 
             result.ShouldHaveSingleItem(testObject.Key);
-        }
-
-        private S3Object CreateS3Object(string key)
-        {
-            var s3Object = new S3Object
-            {
-                Key = key
-            };
-            return s3Object;
         }
 
         [Test]

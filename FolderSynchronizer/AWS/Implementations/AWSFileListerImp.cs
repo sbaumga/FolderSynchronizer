@@ -23,8 +23,14 @@ namespace FolderSynchronizer.AWS.Implementations
 
         public async Task<IEnumerable<string>> ListFilesAsync()
         {
+            var result = await GetAndActOnS3Objects(o => o.Key);
+            return result;
+        }
+
+        private async Task<IEnumerable<T>> GetAndActOnS3Objects<T>(Func<S3Object, T> resultFunc)
+        {
             var s3Objects = await GetS3Objects();
-            var result = s3Objects.Select(x => x.Key);
+            var result = s3Objects.Select(resultFunc);
             return result;
         }
 
@@ -47,8 +53,7 @@ namespace FolderSynchronizer.AWS.Implementations
 
         public async Task<IEnumerable<FileData>> GetFileDataAsync()
         {
-            var s3Objects = await GetS3Objects();
-            var data = s3Objects.Select(o => MakeFileDataFroms3Object(o));
+            var data = await GetAndActOnS3Objects(o => MakeFileDataFroms3Object(o));
             return data;
         }
 
