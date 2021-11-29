@@ -12,6 +12,8 @@ namespace FolderSynchronizer.TypeMapping
         {
             builder.AddTransient<FolderWatcher>();
 
+            builder.AddTransient(typeof(Abstractions.ILogger<>), typeof(LoggerImp<>));
+
             builder.AddTransient<ILocalFileLister, LocalFileListerImp>();
 
             RegisterAWSThings(builder);
@@ -25,7 +27,7 @@ namespace FolderSynchronizer.TypeMapping
             builder.AddTransient<AWSFileRenamer>();
 
             builder.AddTransient<IAWSFileLister, AWSFileListerImp>();
-            builder.AddTransient<AWSFileUploader>();
+            builder.AddTransient<IAWSFileUploader, AWSFileUploaderImp>();
             builder.AddTransient<AWSFileDeleter>();
 
             builder.AddTransient<IAWSClientCreator, AWSClientCreatorImp>();

@@ -1,12 +1,14 @@
-﻿namespace FolderSynchronizer.AWS
+﻿using FolderSynchronizer.AWS.Abstractions;
+
+namespace FolderSynchronizer.AWS
 {
     public class AWSFileManager 
     {
-        private AWSFileUploader Uploader { get; }
+        private IAWSFileUploader Uploader { get; }
         private AWSFileDeleter Deleter { get; }
         private AWSFileRenamer Renamer { get; }
 
-        public AWSFileManager(AWSFileUploader uploader, AWSFileDeleter deleter, AWSFileRenamer renamer)
+        public AWSFileManager(IAWSFileUploader uploader, AWSFileDeleter deleter, AWSFileRenamer renamer)
         {
             Uploader = uploader ?? throw new ArgumentNullException(nameof(uploader));
             Deleter = deleter ?? throw new ArgumentNullException(nameof(deleter));

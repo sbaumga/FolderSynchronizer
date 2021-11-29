@@ -1,12 +1,13 @@
 ﻿using Amazon.S3.Model;
 using FolderSynchronizer.Abstractions;
 using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.AWS.Exceptions;
 
-namespace FolderSynchronizer.AWS
+namespace FolderSynchronizer.AWS.Implementations
 {
-    public class AWSFileUploader
+    public class AWSFileUploaderImp : IAWSFileUploader
     {
-        private ILogger Logger { get; }
+        private FolderSynchronizer.Abstractions.ILogger Logger { get; }
 
         private IAWSPathManager PathManager { get; }
         private IAWSActionTaker ActionTaker { get; }
@@ -14,7 +15,7 @@ namespace FolderSynchronizer.AWS
 
         private string BucketName { get; }
 
-        public AWSFileUploader(ILogger<AWSFileUploader> logger, IAWSPathManager pathManager, IAWSActionTaker actionTaker, ILocalFileLister localFileLister, ConfigData configData)
+        public AWSFileUploaderImp(FolderSynchronizer.Abstractions.ILogger<AWSFileUploaderImp> logger, IAWSPathManager pathManager, IAWSActionTaker actionTaker, ILocalFileLister localFileLister, ConfigData configData)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
@@ -51,7 +52,7 @@ namespace FolderSynchronizer.AWS
             var response = await ActionTaker.DoS3Action(async (client) => await client.PutObjectAsync(putRequest));
             if (!response.HttpStatusCode.HasFlag(System.Net.HttpStatusCode.OK))
             {
-                throw new Exception(response.ToString());
+                throw new AWSFileUploadException($"Upload of file \"{localPath}\" failed: {response}");
             }
 
             LogUploadFileCompleteMessage(localPath, remotePath);

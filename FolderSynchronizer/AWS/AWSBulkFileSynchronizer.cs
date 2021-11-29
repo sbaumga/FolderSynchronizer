@@ -1,12 +1,14 @@
-﻿namespace FolderSynchronizer.AWS
+﻿using FolderSynchronizer.AWS.Abstractions;
+
+namespace FolderSynchronizer.AWS
 {
     public class AWSBulkFileSynchronizer
     {
         private AWSFileSyncChecker FileSyncChecker { get; }
-        private AWSFileUploader Uploader { get; }
+        private IAWSFileUploader Uploader { get; }
         private AWSFileDeleter Deleter { get; }
 
-        public AWSBulkFileSynchronizer(AWSFileSyncChecker awsFileSyncChecker, AWSFileUploader uploader, AWSFileDeleter deleter)
+        public AWSBulkFileSynchronizer(AWSFileSyncChecker awsFileSyncChecker, IAWSFileUploader uploader, AWSFileDeleter deleter)
         {
             FileSyncChecker = awsFileSyncChecker ?? throw new ArgumentNullException(nameof(awsFileSyncChecker));
             Uploader = uploader ?? throw new ArgumentNullException(nameof(uploader));
