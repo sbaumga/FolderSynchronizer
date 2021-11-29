@@ -1,4 +1,5 @@
 ﻿using Amazon.S3;
+using Amazon.S3.Model;
 using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Exceptions;
 using FolderSynchronizer.Extensions;
@@ -14,17 +15,29 @@ namespace FolderSynchronizer.AWS.Implementations
             ClientCreator = clientCreator ?? throw new ArgumentNullException(nameof(clientCreator));
         }
 
-        public TResponse DoS3Action<TResponse>(Func<AmazonS3Client, TResponse> s3Action)
+        [Obsolete]
+        public TResponse DoS3Action<TResponse>(Func<IAmazonS3, TResponse> s3Action)
+        {
+            return DoS3ActionInternal(s3Action);
+        }
+
+        private TResponse DoS3ActionInternal<TResponse>(Func<IAmazonS3, TResponse> s3Action)
         {
             try
             {
                 var client = ClientCreator.GetS3Client();
-                return s3Action(client);
+                var response = s3Action(client);
+                return response;
             }
             catch (AmazonS3Exception amazonS3Exception)
             {
                 throw GetUnderstandableExceptionFromAmazonS3Exception(amazonS3Exception);
             }
+        }
+
+        public async Task<PutObjectResponse> DoUploadActionAsync(PutObjectRequest request)
+        {
+            return DoS3ActionInternal((client) => client.PutObjectAsync(request).Result);
         }
 
         private Exception GetUnderstandableExceptionFromAmazonS3Exception(AmazonS3Exception exception)

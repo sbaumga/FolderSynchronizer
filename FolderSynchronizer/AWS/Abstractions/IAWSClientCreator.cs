@@ -4,6 +4,6 @@ namespace FolderSynchronizer.AWS.Abstractions
 {
     public interface IAWSClientCreator
     {
-        AmazonS3Client GetS3Client();
+        IAmazonS3 GetS3Client();
     }
 }

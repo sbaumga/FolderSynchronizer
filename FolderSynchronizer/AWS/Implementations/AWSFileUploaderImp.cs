@@ -46,10 +46,11 @@ namespace FolderSynchronizer.AWS.Implementations
                 BucketName = BucketName,
                 Key = remotePath,
                 FilePath = localPath,
+                // TODO: make this change based on file type
                 ContentType = "text/plain"
             };
 
-            var response = await ActionTaker.DoS3Action(async (client) => await client.PutObjectAsync(putRequest));
+            var response = await ActionTaker.DoUploadActionAsync(putRequest);
             if (!response.HttpStatusCode.HasFlag(System.Net.HttpStatusCode.OK))
             {
                 throw new AWSFileUploadException($"Upload of file \"{localPath}\" failed: {response}");

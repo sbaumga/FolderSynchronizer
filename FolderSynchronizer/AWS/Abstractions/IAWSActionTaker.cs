@@ -1,9 +1,13 @@
 ﻿using Amazon.S3;
+using Amazon.S3.Model;
 
 namespace FolderSynchronizer.AWS.Abstractions
 {
     public interface IAWSActionTaker
     {
-        TResponse DoS3Action<TResponse>(Func<AmazonS3Client, TResponse> s3Action);
+        [Obsolete]
+        TResponse DoS3Action<TResponse>(Func<IAmazonS3, TResponse> s3Action);
+
+        Task<PutObjectResponse> DoUploadActionAsync(PutObjectRequest request);
     }
 }

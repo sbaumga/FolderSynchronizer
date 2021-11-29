@@ -19,7 +19,7 @@ namespace FolderSynchronizer.AWS.Implementations
             AWSCredentials = new BasicAWSCredentials(configData.AccessKey, configData.SecretKey);
         }
 
-        public AmazonS3Client GetS3Client()
+        public IAmazonS3 GetS3Client()
         {
             var client = new AmazonS3Client(AWSCredentials, RegionEndpoint.CACentral1);
             return client;
