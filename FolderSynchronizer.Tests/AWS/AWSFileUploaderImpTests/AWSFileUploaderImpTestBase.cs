@@ -1,8 +1,12 @@
-﻿using FolderSynchronizer.Abstractions;
+﻿using Amazon.S3.Model;
+using FolderSynchronizer.Abstractions;
 using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Implementations;
 using Moq;
 using NUnit.Framework;
+using Shouldly;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
 {
@@ -37,9 +41,34 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
             Uploader = new AWSFileUploaderImp(MockLogger.Object, MockPathManager.Object, MockActionTaker.Object, MockLocalFileLister.Object, configData);
         }
 
-        protected void SetUpIsPathFile(bool returnValue)
+        protected void SetUpIsPathFile(bool returnValue, string path)
         {
-            MockPathManager.Setup(p => p.IsPathFile(It.IsAny<string>())).Returns(returnValue);
+            MockPathManager.Setup(p => p.IsPathFile(path)).Returns(returnValue);
+        }
+
+        protected void SetUpRemotePath(string localPath, string remotePath)
+        {
+            MockPathManager.Setup(m => m.GetRemotePath(localPath)).Returns(remotePath);
+        }
+
+        protected void SetUpGetFilePathsForFolder(string folderPath, params string[] folderFiles)
+        {
+            MockLocalFileLister.Setup(l => l.GetFilePathsForFolder(folderPath)).Returns(folderFiles);
+        }
+
+        protected void SetUpUploadAction(HttpStatusCode statusCode, string expectedLocalPath, string expectedRemotePath)
+        {
+            var response = new PutObjectResponse
+            {
+                HttpStatusCode = statusCode,
+            };
+
+            MockActionTaker.Setup(t => t.DoUploadActionAsync(It.Is<PutObjectRequest>(r => r.FilePath == expectedLocalPath))).Returns(Task.FromResult(response)).Callback<PutObjectRequest>(request =>
+            {
+                request.FilePath.ShouldBe(expectedLocalPath);
+                request.Key.ShouldBe(expectedRemotePath);
+                request.BucketName.ShouldBe(BucketName);
+            });
         }
     }
 }

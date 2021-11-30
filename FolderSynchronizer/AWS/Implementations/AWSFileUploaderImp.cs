@@ -32,6 +32,11 @@ namespace FolderSynchronizer.AWS.Implementations
 
         public async Task UploadFileAsync(string localPath)
         {
+            if (string.IsNullOrEmpty(localPath))
+            {
+                throw new ArgumentNullException(nameof(localPath));
+            }
+
             if (!PathManager.IsPathFile(localPath))
             {
                 return;
@@ -71,6 +76,11 @@ namespace FolderSynchronizer.AWS.Implementations
 
         public async Task UploadFolderAsync(string localPath)
         {
+            if (string.IsNullOrEmpty(localPath))
+            {
+                throw new ArgumentNullException(nameof(localPath));
+            }
+
             var remotePath = PathManager.GetRemotePath(localPath);
             LogUploadFolderMessage(localPath, remotePath);
 

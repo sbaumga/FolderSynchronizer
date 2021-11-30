@@ -3,6 +3,7 @@ using FolderSynchronizer.AWS.Exceptions;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using System;
 using System.Threading.Tasks;
 
 namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
@@ -10,52 +11,53 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
     public class UploadFileAsyncTests : AWSFileUploaderImpTestBase
     {
         [Test]
+        public async Task NullPathTest()
+        {
+            Should.Throw<ArgumentNullException>(async () => await Uploader.UploadFileAsync(null));
+        }
+
+        [Test]
+        public async Task EmptyPathTest()
+        {
+            Should.Throw<ArgumentNullException>(async () => await Uploader.UploadFileAsync(string.Empty));
+        }
+
+        [Test]
         public async Task UploadingFolderTest()
         {
-            SetUpIsPathFile(false);
+            const string path = "Garbage";
+            SetUpIsPathFile(false, path);
 
-            Should.NotThrow(async () => await Uploader.UploadFileAsync("Garbage"));
+            Should.NotThrow(async () => await Uploader.UploadFileAsync(path));
         }
 
         [Test]
         public async Task UploadReturnsErrorCodeTest()
         {
-            SetUpIsPathFile(true);
-
             const string localPath = "Garbage\\Trash.txt";
+            SetUpIsPathFile(true, localPath);
 
-            SetUpBasicUploadTest(localPath, System.Net.HttpStatusCode.BadRequest);
+            SetUpBasicFileUploadTest(localPath, System.Net.HttpStatusCode.BadRequest);
 
             Should.Throw<AWSFileUploadException>(async () => await Uploader.UploadFileAsync(localPath));
         }
 
-        private void SetUpBasicUploadTest(string localPath, System.Net.HttpStatusCode responseCode)
+        private void SetUpBasicFileUploadTest(string localPath, System.Net.HttpStatusCode responseCode)
         {
             const string remotePath = "Garbage/Trash.txt";
 
-            MockPathManager.Setup(m => m.GetRemotePath(localPath)).Returns(remotePath);
+            SetUpRemotePath(localPath, remotePath);
 
-            var response = new PutObjectResponse
-            {
-                HttpStatusCode = responseCode
-            };
-
-            MockActionTaker.Setup(t => t.DoUploadActionAsync(It.IsAny<PutObjectRequest>())).Returns(Task.FromResult(response)).Callback<PutObjectRequest>(request =>
-            {
-                request.FilePath.ShouldBe(localPath);
-                request.Key.ShouldBe(remotePath);
-                request.BucketName.ShouldBe(BucketName);
-            });
+            SetUpUploadAction(responseCode, localPath, remotePath);
         }
 
         [Test]
         public async Task UploadSucceedsTest()
         {
-            SetUpIsPathFile(true);
-
             const string localPath = "Garbage\\Trash.txt";
+            SetUpIsPathFile(true, localPath);
 
-            SetUpBasicUploadTest(localPath, System.Net.HttpStatusCode.OK);
+            SetUpBasicFileUploadTest(localPath, System.Net.HttpStatusCode.OK);
 
             Should.NotThrow(async () => await Uploader.UploadFileAsync(localPath));
         }
