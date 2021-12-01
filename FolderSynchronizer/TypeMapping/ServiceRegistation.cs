@@ -28,7 +28,7 @@ namespace FolderSynchronizer.TypeMapping
 
             builder.AddTransient<IAWSFileLister, AWSFileListerImp>();
             builder.AddTransient<IAWSFileUploader, AWSFileUploaderImp>();
-            builder.AddTransient<AWSFileDeleter>();
+            builder.AddTransient<IAWSFileDeleter, AWSFileDeleterImp>();
 
             builder.AddTransient<IAWSClientCreator, AWSClientCreatorImp>();
             builder.AddTransient<IAWSPathManager, AWSPathManagerImp>();
