@@ -35,9 +35,14 @@ namespace FolderSynchronizer.AWS.Implementations
             }
         }
 
-        public async Task<PutObjectResponse> DoUploadActionAsync(PutObjectRequest request)
+        public PutObjectResponse DoUploadAction(PutObjectRequest request)
         {
             return DoS3ActionInternal((client) => client.PutObjectAsync(request).Result);
+        }
+
+        public DeleteObjectResponse DoDeleteAction(DeleteObjectRequest request)
+        {
+            return DoS3ActionInternal((client) => client.DeleteObjectAsync(request).Result);
         }
 
         private Exception GetUnderstandableExceptionFromAmazonS3Exception(AmazonS3Exception exception)

@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace FolderSynchronizer.Tests.AWS.AWSActionTakerImpTests
 {
-    public class DoUploadActionTests : AWSActionTakerImpTestBase
+    public class DoDeleteActionTests : AWSActionTakerImpTestBase
     {
         [Test]
-        public void UploadSucceedsTest()
+        public void DeleteSucceedsTest()
         {
-            var request = new PutObjectRequest();
-            var response = new PutObjectResponse();
-            MockAmazonS3.Setup(s => s.PutObjectAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(response));
+            var request = new DeleteObjectRequest();
+            var response = new DeleteObjectResponse();
+            MockAmazonS3.Setup(s => s.DeleteObjectAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(response));
 
-            var result = ActionTaker.DoUploadAction(request);
+            var result = ActionTaker.DoDeleteAction(request);
 
             result.ShouldBe(response);
         }
@@ -30,16 +30,16 @@ namespace FolderSynchronizer.Tests.AWS.AWSActionTakerImpTests
         {
             var fakeS3Exception = CreateS3Exception(errorCode);
 
-            var request = new PutObjectRequest();
-            var response = new PutObjectResponse();
-            MockAmazonS3.Setup(s => s.PutObjectAsync(request, It.IsAny<CancellationToken>())).Throws(fakeS3Exception);
+            var request = new DeleteObjectRequest();
+            var response = new DeleteObjectResponse();
+            MockAmazonS3.Setup(s => s.DeleteObjectAsync(request, It.IsAny<CancellationToken>())).Throws(fakeS3Exception);
 
             CheckThrowsException(request, "Check the provided AWS Credentials.", fakeS3Exception);
         }
 
-        protected void CheckThrowsException(PutObjectRequest request, string exceptionMessage, Exception innerException)
+        protected void CheckThrowsException(DeleteObjectRequest request, string exceptionMessage, Exception innerException)
         {
-            Should.Throw<AWSException>(() => ActionTaker.DoUploadAction(request))
+            Should.Throw<AWSException>(() => ActionTaker.DoDeleteAction(request))
                 .ShouldSatisfyAllConditions(
                 ex => ex.Message.ShouldBe(exceptionMessage),
                 ex => ex.InnerException.ShouldBe(innerException));
@@ -52,9 +52,9 @@ namespace FolderSynchronizer.Tests.AWS.AWSActionTakerImpTests
         {
             var fakeS3Exception = CreateS3Exception(errorCode);
 
-            var request = new PutObjectRequest();
-            var response = new PutObjectResponse();
-            MockAmazonS3.Setup(s => s.PutObjectAsync(request, It.IsAny<CancellationToken>())).Throws(fakeS3Exception);
+            var request = new DeleteObjectRequest();
+            var response = new DeleteObjectResponse();
+            MockAmazonS3.Setup(s => s.DeleteObjectAsync(request, It.IsAny<CancellationToken>())).Throws(fakeS3Exception);
 
             CheckThrowsException(request, "Error occurred: " + fakeS3Exception.Message, fakeS3Exception);
         }

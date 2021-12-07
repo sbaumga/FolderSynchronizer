@@ -24,7 +24,7 @@ namespace FolderSynchronizer.AWS.Implementations
             BucketName = configData.BucketName;
         }
 
-        public async Task DeleteRemoteFileFromLocalFile(string localPath)
+        public async Task DeleteRemoteFileFromLocalFileAsync(string localPath)
         {
             var remotePath = PathManager.GetRemotePath(localPath);
             await DeleteRemoteFileAsync(remotePath);
@@ -50,7 +50,7 @@ namespace FolderSynchronizer.AWS.Implementations
                 Key = remotePath,
             };
 
-            var response = await ActionTaker.DoS3Action(async (client) => await client.DeleteObjectAsync(deleteRequest));
+            var response = ActionTaker.DoDeleteAction(deleteRequest);
             if (!response.HttpStatusCode.HasFlag(System.Net.HttpStatusCode.OK))
             {
                 throw new Exception(response.ToString());

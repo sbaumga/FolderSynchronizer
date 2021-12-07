@@ -4,6 +4,6 @@
     {
         Task DeleteRemoteFileAsync(string remotePath);
 
-        Task DeleteRemoteFileFromLocalFile(string localPath);
+        Task DeleteRemoteFileFromLocalFileAsync(string localPath);
     }
 }

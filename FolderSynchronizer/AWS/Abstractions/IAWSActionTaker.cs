@@ -8,6 +8,7 @@ namespace FolderSynchronizer.AWS.Abstractions
         [Obsolete]
         TResponse DoS3Action<TResponse>(Func<IAmazonS3, TResponse> s3Action);
 
-        Task<PutObjectResponse> DoUploadActionAsync(PutObjectRequest request);
+        PutObjectResponse DoUploadAction(PutObjectRequest request);
+        DeleteObjectResponse DoDeleteAction(DeleteObjectRequest request);
     }
 }

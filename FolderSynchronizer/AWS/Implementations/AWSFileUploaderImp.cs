@@ -55,7 +55,7 @@ namespace FolderSynchronizer.AWS.Implementations
                 ContentType = "text/plain"
             };
 
-            var response = await ActionTaker.DoUploadActionAsync(putRequest);
+            var response = ActionTaker.DoUploadAction(putRequest);
             if (!response.HttpStatusCode.HasFlag(System.Net.HttpStatusCode.OK))
             {
                 throw new AWSFileUploadException($"Upload of file \"{localPath}\" failed: {response}");

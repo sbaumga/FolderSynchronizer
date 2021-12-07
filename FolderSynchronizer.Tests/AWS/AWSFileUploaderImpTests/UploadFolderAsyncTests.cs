@@ -32,7 +32,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
 
             await Uploader.UploadFolderAsync(path);
 
-            MockActionTaker.Verify(a => a.DoUploadActionAsync(It.IsAny<PutObjectRequest>()), Times.Never);
+            MockActionTaker.Verify(a => a.DoUploadAction(It.IsAny<PutObjectRequest>()), Times.Never);
         }
 
         [Test]
@@ -43,7 +43,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
 
             await Uploader.UploadFolderAsync(folderPath);
 
-            MockActionTaker.Verify(a => a.DoUploadActionAsync(It.IsAny<PutObjectRequest>()), Times.Once);
+            MockActionTaker.Verify(a => a.DoUploadAction(It.IsAny<PutObjectRequest>()), Times.Once);
         }
 
         private void SetUpSingleFileTest(string folderPath, HttpStatusCode reponseStatusCode)
@@ -71,7 +71,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
 
             Should.Throw<AWSFileUploadException>(async () => await Uploader.UploadFolderAsync(folderPath));
 
-            MockActionTaker.Verify(a => a.DoUploadActionAsync(It.IsAny<PutObjectRequest>()), Times.Once);
+            MockActionTaker.Verify(a => a.DoUploadAction(It.IsAny<PutObjectRequest>()), Times.Once);
         }
 
         [Test]
@@ -90,7 +90,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
 
             await Uploader.UploadFolderAsync(folderPath);
 
-            MockActionTaker.Verify(a => a.DoUploadActionAsync(It.IsAny<PutObjectRequest>()), Times.Exactly(2));
+            MockActionTaker.Verify(a => a.DoUploadAction(It.IsAny<PutObjectRequest>()), Times.Exactly(2));
         }
 
         [Test]
@@ -109,7 +109,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
 
             Should.Throw<AWSFileUploadException>(async () => await Uploader.UploadFolderAsync(folderPath));
 
-            MockActionTaker.Verify(a => a.DoUploadActionAsync(It.IsAny<PutObjectRequest>()), Times.Exactly(2));
+            MockActionTaker.Verify(a => a.DoUploadAction(It.IsAny<PutObjectRequest>()), Times.Exactly(2));
         }
 
         [Test]
@@ -128,7 +128,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
 
             Should.Throw<AWSFileUploadException>(async () => await Uploader.UploadFolderAsync(folderPath));
 
-            MockActionTaker.Verify(a => a.DoUploadActionAsync(It.IsAny<PutObjectRequest>()), Times.Exactly(2));
+            MockActionTaker.Verify(a => a.DoUploadAction(It.IsAny<PutObjectRequest>()), Times.Exactly(2));
         }
     }
 }
