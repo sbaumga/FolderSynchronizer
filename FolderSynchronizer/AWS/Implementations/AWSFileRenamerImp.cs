@@ -1,14 +1,14 @@
 ﻿using FolderSynchronizer.AWS.Abstractions;
 
-namespace FolderSynchronizer.AWS
+namespace FolderSynchronizer.AWS.Implementations
 {
-    public class AWSFileRenamer
+    public class AWSFileRenamerImp : IAWSFileRenamer
     {
         private IAWSFileUploader Uploader { get; }
         private IAWSFileDeleter Deleter { get; }
         private IAWSPathManager PathManager { get; }
 
-        public AWSFileRenamer(IAWSFileUploader uploader, IAWSFileDeleter deleter, IAWSPathManager pathManager)
+        public AWSFileRenamerImp(IAWSFileUploader uploader, IAWSFileDeleter deleter, IAWSPathManager pathManager)
         {
             Uploader = uploader ?? throw new ArgumentNullException(nameof(uploader));
             Deleter = deleter ?? throw new ArgumentNullException(nameof(deleter));

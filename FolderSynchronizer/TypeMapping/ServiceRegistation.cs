@@ -24,7 +24,7 @@ namespace FolderSynchronizer.TypeMapping
             builder.AddTransient<AWSFileManager>();
             builder.AddTransient<AWSFileSyncChecker>();
             builder.AddTransient<AWSBulkFileSynchronizer>();
-            builder.AddTransient<AWSFileRenamer>();
+            builder.AddTransient<IAWSFileRenamer, AWSFileRenamerImp>();
 
             builder.AddTransient<IAWSFileLister, AWSFileListerImp>();
             builder.AddTransient<IAWSFileUploader, AWSFileUploaderImp>();

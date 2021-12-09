@@ -2,6 +2,10 @@
 {
     public class AWSException : FolderSynchronizerException
     {
+        public AWSException() 
+        { 
+        }
+
         public AWSException(string message) : base(message)
         {
         }

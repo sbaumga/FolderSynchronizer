@@ -2,6 +2,10 @@
 {
     public class FolderSynchronizerException : Exception
     {
+        public FolderSynchronizerException()
+        {
+        }
+
         public FolderSynchronizerException(string message) : base(message)
         {
         }
