@@ -6,26 +6,27 @@ using System.Linq;
 
 namespace FolderSynchronizer.Tests.LocalFileListerImpTests
 {
-    public class GetFilePathsForFolderTests : LocalFileListerImpTestBase
+    // TODO: rework tests into base class
+    public class GetFileDataForFolderTests : LocalFileListerImpTestBase
     {
         [Test]
         public void FolderDoesNotExistTest()
         {
-            Should.Throw<DirectoryNotFoundException>(() => FileLister.GetFilePathsForFolder("Garbage"));
+            Should.Throw<DirectoryNotFoundException>(() => FileLister.GetFileDataForFolder("Garbage"));
         }
 
         [Test]
         public void EmptyFolderTest()
         {
-            var result = RunGetFilePathsForFolderOnTestFolder();
+            var result = RunGetFileDataForFolderOnTestFolder();
 
             result.ShouldBeEmpty();
         }
 
-        private IEnumerable<string> RunGetFilePathsForFolderOnTestFolder()
+        private IEnumerable<FileData> RunGetFileDataForFolderOnTestFolder()
         {
             var folderPath = GetTestFolderPath();
-            var result = FileLister.GetFilePathsForFolder(folderPath);
+            var result = FileLister.GetFileDataForFolder(folderPath);
 
             return result;
         }
@@ -45,13 +46,13 @@ namespace FolderSynchronizer.Tests.LocalFileListerImpTests
 
             var expectedFilePaths = fileNames.Select(n => GetFullExpectedPathForFile(n));
 
-            var result = RunGetFilePathsForFolderOnTestFolder().ToList();
+            var result = RunGetFileDataForFolderOnTestFolder().ToList();
 
             result.Count().ShouldBe(fileNames.Length);
 
             foreach (var file in expectedFilePaths)
             {
-                result.ShouldContain(file);
+                result.ShouldContain(d => d.Path == file && d.LastModifiedDate > System.DateTime.Now.AddMinutes(2));
             }
         }
 

@@ -54,5 +54,18 @@ namespace FolderSynchronizer.Tests.LocalFileListerImpTests
             var testFolderPath = GetTestFolderPath();
             Directory.Delete(testFolderPath, true);
         }
+
+        protected void CreateFileInTestFolder(string fileName)
+        {
+            var filePath = GetFullExpectedPathForFile(fileName);
+            using var _ = File.Create(filePath);
+        }
+
+        protected string GetFullExpectedPathForFile(string fileName)
+        {
+            var folderPath = GetTestFolderPath();
+            var filePath = Path.Combine(folderPath, fileName);
+            return filePath;
+        }
     }
 }
