@@ -1,65 +1,18 @@
-﻿using NUnit.Framework;
-using Shouldly;
+﻿using Shouldly;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace FolderSynchronizer.Tests.LocalFileListerImpTests
 {
-    // TODO: rework tests into base class
-    public class GetFileDataForFolderTests : LocalFileListerImpTestBase
+    public class GetFileDataForFolderTests : LocalFileListerImpTestBase<FileData>
     {
-        [Test]
-        public void FolderDoesNotExistTest()
+        protected override IEnumerable<FileData> PerformTestableFunctionOnPath(string path)
         {
-            Should.Throw<DirectoryNotFoundException>(() => FileLister.GetFileDataForFolder("Garbage"));
+            return FileLister.GetFileDataForFolder(path);
         }
 
-        [Test]
-        public void EmptyFolderTest()
+        protected override void VerifyFilePathExistsInTestableFunctionResult(string filePath, IEnumerable<FileData> testableFunctionResult)
         {
-            var result = RunGetFileDataForFolderOnTestFolder();
-
-            result.ShouldBeEmpty();
-        }
-
-        private IEnumerable<FileData> RunGetFileDataForFolderOnTestFolder()
-        {
-            var folderPath = GetTestFolderPath();
-            var result = FileLister.GetFileDataForFolder(folderPath);
-
-            return result;
-        }
-
-        [Test]
-        public void SingleFileTest()
-        {
-            DoFileTest("TestFile.txt");
-        }
-
-        private void DoFileTest(params string[] fileNames)
-        {
-            foreach (var file in fileNames)
-            {
-                CreateFileInTestFolder(file);
-            }
-
-            var expectedFilePaths = fileNames.Select(n => GetFullExpectedPathForFile(n));
-
-            var result = RunGetFileDataForFolderOnTestFolder().ToList();
-
-            result.Count().ShouldBe(fileNames.Length);
-
-            foreach (var file in expectedFilePaths)
-            {
-                result.ShouldContain(d => d.Path == file && d.LastModifiedDate > System.DateTime.Now.AddMinutes(2));
-            }
-        }
-
-        [Test]
-        public void ThreeFileTest()
-        {
-            DoFileTest("TestFile1.txt", "TestFile2.mp3", "TestFile3.jpg");
+            testableFunctionResult.ShouldContain(d => d.Path == filePath && d.LastModifiedDate > System.DateTime.Now.AddMinutes(2));
         }
     }
 }

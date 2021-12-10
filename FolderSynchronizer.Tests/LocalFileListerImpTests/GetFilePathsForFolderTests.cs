@@ -1,64 +1,18 @@
-﻿using NUnit.Framework;
-using Shouldly;
+﻿using Shouldly;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace FolderSynchronizer.Tests.LocalFileListerImpTests
 {
-    public class GetFilePathsForFolderTests : LocalFileListerImpTestBase
+    public class GetFilePathsForFolderTests : LocalFileListerImpTestBase<string>
     {
-        [Test]
-        public void FolderDoesNotExistTest()
+        protected override IEnumerable<string> PerformTestableFunctionOnPath(string path)
         {
-            Should.Throw<DirectoryNotFoundException>(() => FileLister.GetFilePathsForFolder("Garbage"));
+            return FileLister.GetFilePathsForFolder(path);
         }
 
-        [Test]
-        public void EmptyFolderTest()
+        protected override void VerifyFilePathExistsInTestableFunctionResult(string filePath, IEnumerable<string> testableFunctionResult)
         {
-            var result = RunGetFilePathsForFolderOnTestFolder();
-
-            result.ShouldBeEmpty();
-        }
-
-        private IEnumerable<string> RunGetFilePathsForFolderOnTestFolder()
-        {
-            var folderPath = GetTestFolderPath();
-            var result = FileLister.GetFilePathsForFolder(folderPath);
-
-            return result;
-        }
-
-        [Test]
-        public void SingleFileTest()
-        {
-            DoFileTest("TestFile.txt");
-        }
-
-        private void DoFileTest(params string[] fileNames)
-        {
-            foreach (var file in fileNames)
-            {
-                CreateFileInTestFolder(file);
-            }
-
-            var expectedFilePaths = fileNames.Select(n => GetFullExpectedPathForFile(n));
-
-            var result = RunGetFilePathsForFolderOnTestFolder().ToList();
-
-            result.Count().ShouldBe(fileNames.Length);
-
-            foreach (var file in expectedFilePaths)
-            {
-                result.ShouldContain(file);
-            }
-        }
-
-        [Test]
-        public void ThreeFileTest()
-        {
-            DoFileTest("TestFile1.txt", "TestFile2.mp3", "TestFile3.jpg");
+            testableFunctionResult.ShouldContain(filePath);
         }
     }
 }

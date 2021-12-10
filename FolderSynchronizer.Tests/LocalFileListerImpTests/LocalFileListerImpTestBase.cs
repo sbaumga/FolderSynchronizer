@@ -1,12 +1,14 @@
 ﻿using FolderSynchronizer.Implementations;
 using NUnit.Framework;
-using System;
+using Shouldly;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace FolderSynchronizer.Tests.LocalFileListerImpTests
 {
     [TestFixture]
-    public abstract class LocalFileListerImpTestBase
+    public abstract class LocalFileListerImpTestBase<T>
     {
         protected LocalFileListerImp FileLister { get; set; }
 
@@ -36,12 +38,18 @@ namespace FolderSynchronizer.Tests.LocalFileListerImpTests
             return Path.Combine(currentFolder, TestFolderName);
         }
 
+        protected string TestFolderName = "LocalFileListerImpTest Files";
+
         private string GetCurrentFolderPath()
         {
             return Directory.GetCurrentDirectory();
         }
 
-        protected string TestFolderName = "LocalFileListerImpTest Files";
+        private void DeleteTestFolder()
+        {
+            var testFolderPath = GetTestFolderPath();
+            Directory.Delete(testFolderPath, true);
+        }
 
         [TearDown]
         public void TearDown()
@@ -49,10 +57,28 @@ namespace FolderSynchronizer.Tests.LocalFileListerImpTests
             DeleteTestFolder();
         }
 
-        private void DeleteTestFolder()
+        [Test]
+        public void FolderDoesNotExistTest()
         {
-            var testFolderPath = GetTestFolderPath();
-            Directory.Delete(testFolderPath, true);
+            Should.Throw<DirectoryNotFoundException>(() => PerformTestableFunctionOnPath("Garbage"));
+        }
+
+        protected abstract IEnumerable<T> PerformTestableFunctionOnPath(string path);
+
+        [Test]
+        public void EmptyFolderTest()
+        {
+            var result = RunTestableFunctionForFolderOnTestFolder();
+
+            result.ShouldBeEmpty();
+        }
+
+        private IEnumerable<T> RunTestableFunctionForFolderOnTestFolder()
+        {
+            var folderPath = GetTestFolderPath();
+            var result = PerformTestableFunctionOnPath(folderPath);
+
+            return result;
         }
 
         protected void CreateFileInTestFolder(string fileName)
@@ -66,6 +92,39 @@ namespace FolderSynchronizer.Tests.LocalFileListerImpTests
             var folderPath = GetTestFolderPath();
             var filePath = Path.Combine(folderPath, fileName);
             return filePath;
+        }
+
+        [Test]
+        public void SingleFileTest()
+        {
+            DoFileTest("TestFile.txt");
+        }
+
+        private void DoFileTest(params string[] fileNames)
+        {
+            foreach (var file in fileNames)
+            {
+                CreateFileInTestFolder(file);
+            }
+
+            var expectedFilePaths = fileNames.Select(n => GetFullExpectedPathForFile(n));
+
+            var result = RunTestableFunctionForFolderOnTestFolder().ToList();
+
+            result.Count.ShouldBe(fileNames.Length);
+
+            foreach (var file in expectedFilePaths)
+            {
+                VerifyFilePathExistsInTestableFunctionResult(file, result);
+            }
+        }
+
+        protected abstract void VerifyFilePathExistsInTestableFunctionResult(string filePath, IEnumerable<T> testableFunctionResult);
+
+        [Test]
+        public void ThreeFileTest()
+        {
+            DoFileTest("TestFile1.txt", "TestFile2.mp3", "TestFile3.jpg");
         }
     }
 }
