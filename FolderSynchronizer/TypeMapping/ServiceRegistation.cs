@@ -22,7 +22,7 @@ namespace FolderSynchronizer.TypeMapping
         private static void RegisterAWSThings(IServiceCollection builder)
         {
             builder.AddTransient<AWSFileManager>();
-            builder.AddTransient<AWSFileSyncChecker>();
+            builder.AddTransient<IAWSFileSyncChecker, AWSFileSyncCheckerImp>();
             builder.AddTransient<AWSBulkFileSynchronizer>();
             builder.AddTransient<IAWSFileRenamer, AWSFileRenamerImp>();
 

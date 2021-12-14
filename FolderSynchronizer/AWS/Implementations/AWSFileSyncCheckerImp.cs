@@ -1,16 +1,16 @@
 ﻿using FolderSynchronizer.Abstractions;
 using FolderSynchronizer.AWS.Abstractions;
 
-namespace FolderSynchronizer.AWS
+namespace FolderSynchronizer.AWS.Implementations
 {
-    public class AWSFileSyncChecker
+    public class AWSFileSyncCheckerImp : IAWSFileSyncChecker
     {
         private string LocalFolder { get; }
         private ILocalFileLister LocalFileLister { get; }
         private IAWSFileLister AWSFileLister { get; }
         private IAWSPathManager PathManager { get; }
 
-        public AWSFileSyncChecker(ConfigData configData, ILocalFileLister localFileLister, IAWSFileLister awsFileLister, IAWSPathManager awsPathManager)
+        public AWSFileSyncCheckerImp(ConfigData configData, ILocalFileLister localFileLister, IAWSFileLister awsFileLister, IAWSPathManager awsPathManager)
         {
             if (configData == null)
             {
