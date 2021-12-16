@@ -1,15 +1,15 @@
-using FolderSynchronizer.AWS;
+using FolderSynchronizer.AWS.Abstractions;
 
 namespace FolderSynchronizer
 {
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        
-        private AWSBulkFileSynchronizer BulkFileSynchronizer { get; }
+
+        private IAWSBulkFileSynchronizer BulkFileSynchronizer { get; }
         private FolderWatcher Watcher { get; }
 
-        public Worker(ILogger<Worker> logger, AWSBulkFileSynchronizer bulkFileSynchronizer, FolderWatcher watcher)
+        public Worker(ILogger<Worker> logger, IAWSBulkFileSynchronizer bulkFileSynchronizer, FolderWatcher watcher)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
@@ -19,7 +19,7 @@ namespace FolderSynchronizer
 
         private async Task DoInitialSync()
         {
-            await BulkFileSynchronizer.SynchronizeFiles();
+            await BulkFileSynchronizer.SynchronizeFilesAsync();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

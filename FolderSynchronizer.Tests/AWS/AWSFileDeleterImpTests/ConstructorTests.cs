@@ -23,7 +23,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
         [TestCase(NullConstructorArg.ActionTaker)]
         [TestCase(NullConstructorArg.FileLister)]
         [TestCase(NullConstructorArg.ConfigData)]
-        public void NullLoggerTest(NullConstructorArg nullArg)
+        public void ArgumentTest(NullConstructorArg nullArg)
         {
             IAWSPathManager pathManger = nullArg == NullConstructorArg.PathManger ? null : GetPathManger();
             IAWSActionTaker actionTaker = nullArg == NullConstructorArg.ActionTaker ? null : GetActionTaker();

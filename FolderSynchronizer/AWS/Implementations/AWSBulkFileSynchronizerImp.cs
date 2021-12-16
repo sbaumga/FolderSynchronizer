@@ -1,21 +1,22 @@
 ﻿using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.AWS.Enums;
 
-namespace FolderSynchronizer.AWS
+namespace FolderSynchronizer.AWS.Implementations
 {
-    public class AWSBulkFileSynchronizer
+    public class AWSBulkFileSynchronizerImp : IAWSBulkFileSynchronizer
     {
         private IAWSFileSyncChecker FileSyncChecker { get; }
         private IAWSFileUploader Uploader { get; }
         private IAWSFileDeleter Deleter { get; }
 
-        public AWSBulkFileSynchronizer(IAWSFileSyncChecker awsFileSyncChecker, IAWSFileUploader uploader, IAWSFileDeleter deleter)
+        public AWSBulkFileSynchronizerImp(IAWSFileSyncChecker awsFileSyncChecker, IAWSFileUploader uploader, IAWSFileDeleter deleter)
         {
             FileSyncChecker = awsFileSyncChecker ?? throw new ArgumentNullException(nameof(awsFileSyncChecker));
             Uploader = uploader ?? throw new ArgumentNullException(nameof(uploader));
             Deleter = deleter ?? throw new ArgumentNullException(nameof(deleter));
         }
 
-        public async Task SynchronizeFiles()
+        public async Task SynchronizeFilesAsync()
         {
             var syncStatus = await FileSyncChecker.GetSynchronizationStatusForFilesAsync();
 

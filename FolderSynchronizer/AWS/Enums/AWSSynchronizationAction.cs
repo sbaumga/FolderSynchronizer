@@ -1,4 +1,4 @@
-﻿namespace FolderSynchronizer.AWS
+﻿namespace FolderSynchronizer.AWS.Enums
 {
     public enum AWSSynchronizationAction
     {
