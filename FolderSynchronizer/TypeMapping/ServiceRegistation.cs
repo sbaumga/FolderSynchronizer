@@ -1,5 +1,4 @@
 ﻿using FolderSynchronizer.Abstractions;
-using FolderSynchronizer.AWS;
 using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Implementations;
 using FolderSynchronizer.Implementations;
@@ -21,7 +20,6 @@ namespace FolderSynchronizer.TypeMapping
 
         private static void RegisterAWSThings(IServiceCollection builder)
         {
-            builder.AddTransient<AWSFileManager>();
             builder.AddTransient<IAWSFileSyncChecker, AWSFileSyncCheckerImp>();
             builder.AddTransient<IAWSBulkFileSynchronizer, AWSBulkFileSynchronizerImp>();
             builder.AddTransient<IAWSFileRenamer, AWSFileRenamerImp>();

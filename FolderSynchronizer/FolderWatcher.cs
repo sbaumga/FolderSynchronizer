@@ -1,19 +1,36 @@
 ﻿using FolderSynchronizer.AWS;
+using FolderSynchronizer.AWS.Abstractions;
 
 namespace FolderSynchronizer
 {
     public class FolderWatcher
     {
-        private FileSystemWatcher Watcher { get; }
-
-        private AWSFileManager AWSFileManager { get; }
-
         private string FolderName { get; }
 
-        public FolderWatcher(ConfigData config, AWSFileManager awsFileManager)
-        {
-            FolderName = config.LocalFolderName;
+        private IAWSFileUploader FileUploader { get; }
+        private IAWSFileDeleter FileDeleter { get; }
+        private IAWSFileRenamer FileRenamer { get; }
 
+        private FileSystemWatcher Watcher { get; set; }
+
+        public FolderWatcher(ConfigData configData, IAWSFileUploader fileUploader, IAWSFileDeleter fileDeleter, IAWSFileRenamer fileRenamer)
+        {
+            if (configData == null)
+            {
+                throw new ArgumentNullException(nameof(configData));
+            }
+
+            FolderName = configData.LocalFolderName;
+
+            FileUploader = fileUploader ?? throw new ArgumentNullException(nameof(fileUploader));
+            FileDeleter = fileDeleter ?? throw new ArgumentNullException(nameof(fileDeleter));
+            FileRenamer = fileRenamer ?? throw new ArgumentNullException(nameof(fileRenamer));
+
+            InitializeFileWatcher();
+        }
+
+        private void InitializeFileWatcher()
+        {
             Watcher = new FileSystemWatcher(FolderName);
 
             Watcher.Created += FileCreated;
@@ -22,22 +39,16 @@ namespace FolderSynchronizer
 
             Watcher.EnableRaisingEvents = true;
             Watcher.IncludeSubdirectories = true;
-
-            AWSFileManager = awsFileManager;
         }
 
         private void FileCreated(object sender, FileSystemEventArgs e)
         {            
-            AWSFileManager.UploadFileAsync(e.FullPath);
-
-            // Add message to queue?
+            FileUploader.UploadFileAsync(e.FullPath);
         }
 
         private void FileDeleted(object sender, FileSystemEventArgs e)
         {
-            AWSFileManager.DeleteRemoteFileFromLocalFileAsync(e.FullPath);
-
-            // Add message to queue?
+            FileDeleter.DeleteRemoteFileFromLocalFileAsync(e.FullPath);
         }
 
         private void FileRenamed(object sender, RenamedEventArgs e)
@@ -45,9 +56,7 @@ namespace FolderSynchronizer
             var oldLocalPath = e.OldFullPath;
             var newLocalPath = e.FullPath;
             
-            AWSFileManager.RenameFileAsync(oldLocalPath, newLocalPath);
-
-            // Add message to queue?
+            FileRenamer.RenameFileAsync(oldLocalPath, newLocalPath);
         }
     }
 }
