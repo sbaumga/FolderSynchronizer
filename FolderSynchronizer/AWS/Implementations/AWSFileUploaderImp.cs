@@ -46,13 +46,14 @@ namespace FolderSynchronizer.AWS.Implementations
 
             LogUploadFileMessage(localPath, remotePath);
 
+            var mimeType = GetMimeType(localPath);
+
             var putRequest = new PutObjectRequest
             {
                 BucketName = BucketName,
                 Key = remotePath,
                 FilePath = localPath,
-                // TODO: make this change based on file type
-                ContentType = "text/plain"
+                ContentType = mimeType
             };
 
             var response = ActionTaker.DoUploadAction(putRequest);
@@ -67,6 +68,13 @@ namespace FolderSynchronizer.AWS.Implementations
         private void LogUploadFileMessage(string localPath, string remotePath)
         {
             Logger.LogInformation($"Uploading file {localPath} to {remotePath}");
+        }
+
+        private string GetMimeType(string filePath)
+        {
+            var extension = Path.GetExtension(filePath);
+            var mimeType = MimeTypes.MimeTypeMap.GetMimeType(extension);
+            return mimeType;
         }
 
         private void LogUploadFileCompleteMessage(string localPath, string remotePath)
