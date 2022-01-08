@@ -5,7 +5,7 @@ using FolderSynchronizer.Implementations;
 
 namespace FolderSynchronizer.AWS.Implementations
 {
-    public class AWSFileSyncCheckerImp : FileSyncCheckerBase, IAWSFileSyncChecker
+    public class AWSFileSyncCheckerImp : FileSyncCheckerBaseImp, IAWSFileSyncChecker
     {
         private string LocalFolder { get; }
         private ILocalFileLister LocalFileLister { get; }

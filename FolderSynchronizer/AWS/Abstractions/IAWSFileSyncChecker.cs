@@ -1,8 +1,8 @@
-﻿
+﻿using FolderSynchronizer.Abstractions;
+
 namespace FolderSynchronizer.AWS.Abstractions
 {
-    public interface IAWSFileSyncChecker
+    public interface IAWSFileSyncChecker : IFileSyncChecker
     {
-        Task<IEnumerable<FileSynchronizationStatusData>> GetSynchronizationStatusForFilesAsync();
     }
 }

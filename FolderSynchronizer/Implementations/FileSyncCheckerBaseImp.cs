@@ -2,7 +2,7 @@
 
 namespace FolderSynchronizer.Implementations
 {
-    public abstract class FileSyncCheckerBase
+    public abstract class FileSyncCheckerBaseImp
     {
         public async Task<IEnumerable<FileSynchronizationStatusData>> GetSynchronizationStatusForFilesAsync()
         {

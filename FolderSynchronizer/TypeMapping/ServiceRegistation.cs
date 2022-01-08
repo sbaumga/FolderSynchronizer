@@ -22,6 +22,7 @@ namespace FolderSynchronizer.TypeMapping
             builder.AddTransient<ILocalFileLister, LocalFileListerImp>();
             builder.AddTransient<ISerializer, JsonSerializerImp>();
             builder.AddTransient<IFileDataListPersister, FileDataListPersisterImp>();
+            builder.AddTransient<ISavedFileListSyncChecker, SavedFileListSyncCheckerImp>();
         }
 
         private static void RegisterAWSThings(IServiceCollection builder)
