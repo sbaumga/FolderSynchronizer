@@ -1,6 +1,7 @@
 ﻿using FolderSynchronizer.Abstractions;
 using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Implementations;
+using FolderSynchronizer.Data;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
@@ -25,7 +26,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileSyncCheckerImpTests
         [SetUp]
         public void SetUp()
         {
-            var configData = new ConfigData { LocalFolderName = LocalFolder };
+            var configData = new LocalConfigData { LocalFolderName = LocalFolder };
 
             LocalFileListerMock = new Mock<ILocalFileLister>(MockBehavior.Strict);
             AWSFileListerMock = new Mock<IAWSFileLister>(MockBehavior.Strict);
@@ -94,7 +95,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileSyncCheckerImpTests
                 var expectedLocal = expectedPair.Item1;
                 var expectedRemote = expectedPair.Item2;
 
-                syncData.ShouldContain(d => d.LocalData == expectedLocal && d.RemoteData == expectedRemote);
+                syncData.ShouldContain(d => d.SourceData == expectedLocal && d.DestinationData == expectedRemote);
             }
         }
     }

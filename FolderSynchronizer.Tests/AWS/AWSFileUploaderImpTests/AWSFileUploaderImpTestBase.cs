@@ -1,6 +1,7 @@
 ﻿using Amazon.S3.Model;
 using FolderSynchronizer.Abstractions;
 using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.AWS.Data;
 using FolderSynchronizer.AWS.Implementations;
 using Moq;
 using NUnit.Framework;
@@ -36,7 +37,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
             MockLocalFileLister = new Mock<ILocalFileLister>(MockBehavior.Strict);
 
             BucketName = "TestBucket";
-            var configData = new ConfigData { BucketName = BucketName };
+            var configData = new AWSConfigData { BucketName = BucketName };
 
             Uploader = new AWSFileUploaderImp(MockLogger.Object, MockPathManager.Object, MockActionTaker.Object, MockLocalFileLister.Object, configData);
         }

@@ -1,4 +1,5 @@
-﻿using Shouldly;
+﻿using FolderSynchronizer.Data;
+using Shouldly;
 using System.Collections.Generic;
 
 namespace FolderSynchronizer.Tests.LocalFileListerImpTests

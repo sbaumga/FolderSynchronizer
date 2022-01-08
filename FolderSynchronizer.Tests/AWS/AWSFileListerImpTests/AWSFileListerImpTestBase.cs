@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.AWS.Data;
 using FolderSynchronizer.AWS.Implementations;
 using Moq;
 using NUnit.Framework;
@@ -15,7 +16,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileListerImpTests
     {
         protected Mock<IAWSActionTaker> MockActionTaker { get; set; }
 
-        protected ConfigData ConfigData { get; } = new ConfigData { BucketName = "TestBucket" };
+        protected AWSConfigData ConfigData { get; } = new AWSConfigData { BucketName = "TestBucket" };
 
         protected AWSFileListerImp FileLister { get; set; }
 

@@ -34,8 +34,8 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileSyncCheckerImpTests
 
             var syncData = result.Single();
 
-            syncData.LocalData.ShouldBe(localData);
-            syncData.RemoteData.ShouldBeNull();
+            syncData.SourceData.ShouldBe(localData);
+            syncData.DestinationData.ShouldBeNull();
         }
 
         [Test]
@@ -52,8 +52,8 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileSyncCheckerImpTests
 
             var syncData = result.Single();
 
-            syncData.LocalData.ShouldBeNull();
-            syncData.RemoteData.ShouldBe(remoteData);
+            syncData.SourceData.ShouldBeNull();
+            syncData.DestinationData.ShouldBe(remoteData);
         }
 
         [Test]

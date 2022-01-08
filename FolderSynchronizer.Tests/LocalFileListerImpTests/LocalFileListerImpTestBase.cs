@@ -7,54 +7,15 @@ using System.Linq;
 
 namespace FolderSynchronizer.Tests.LocalFileListerImpTests
 {
-    [TestFixture]
-    public abstract class LocalFileListerImpTestBase<T>
+    public abstract class LocalFileListerImpTestBase<T> : LocalFolderTestBase
     {
         protected LocalFileListerImp FileLister { get; set; }
 
-        [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
-            CreateBaseTestFolder();
+            base.SetUp();
 
             FileLister = new LocalFileListerImp();
-        }
-
-        private void CreateBaseTestFolder()
-        {
-            var testFolderPath = GetTestFolderPath();
-
-            if (Directory.Exists(testFolderPath))
-            {
-                DeleteTestFolder();
-            }
-
-            Directory.CreateDirectory(testFolderPath);
-        }
-
-        protected string GetTestFolderPath()
-        {
-            var currentFolder = GetCurrentFolderPath();
-            return Path.Combine(currentFolder, TestFolderName);
-        }
-
-        protected string TestFolderName = "LocalFileListerImpTest Files";
-
-        private string GetCurrentFolderPath()
-        {
-            return Directory.GetCurrentDirectory();
-        }
-
-        private void DeleteTestFolder()
-        {
-            var testFolderPath = GetTestFolderPath();
-            Directory.Delete(testFolderPath, true);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            DeleteTestFolder();
         }
 
         [Test]

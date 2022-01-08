@@ -1,4 +1,5 @@
-﻿using FolderSynchronizer.AWS.Implementations;
+﻿using FolderSynchronizer.AWS.Data;
+using FolderSynchronizer.AWS.Implementations;
 using NUnit.Framework;
 using Shouldly;
 
@@ -19,7 +20,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSClientCreatorImpTests
 
         private AWSClientCreatorImp CreateAWSClientCreator(string accessKey, string secretKey)
         {
-            var configData = new ConfigData()
+            var configData = new AWSConfigData()
             {
                 AccessKey = accessKey,
                 SecretKey = secretKey

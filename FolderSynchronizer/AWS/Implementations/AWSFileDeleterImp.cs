@@ -1,5 +1,6 @@
 ﻿using Amazon.S3.Model;
 using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.AWS.Data;
 
 namespace FolderSynchronizer.AWS.Implementations
 {
@@ -11,7 +12,7 @@ namespace FolderSynchronizer.AWS.Implementations
 
         private string BucketName { get; }
 
-        public AWSFileDeleterImp(IAWSPathManager pathManager, IAWSFileLister fileLister, IAWSActionTaker actionTaker, ConfigData configData)
+        public AWSFileDeleterImp(IAWSPathManager pathManager, IAWSFileLister fileLister, IAWSActionTaker actionTaker, AWSConfigData configData)
         {
             PathManager = pathManager ?? throw new ArgumentNullException(nameof(pathManager));
             FileLister = fileLister ?? throw new ArgumentNullException(nameof(fileLister));

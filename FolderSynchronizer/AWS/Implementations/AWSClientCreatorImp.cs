@@ -2,6 +2,7 @@
 using Amazon.Runtime;
 using Amazon.S3;
 using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.AWS.Data;
 
 namespace FolderSynchronizer.AWS.Implementations
 {
@@ -9,7 +10,7 @@ namespace FolderSynchronizer.AWS.Implementations
     {
         private AWSCredentials AWSCredentials { get; }
 
-        public AWSClientCreatorImp(ConfigData configData)
+        public AWSClientCreatorImp(AWSConfigData configData)
         {
             if (configData == null)
             {

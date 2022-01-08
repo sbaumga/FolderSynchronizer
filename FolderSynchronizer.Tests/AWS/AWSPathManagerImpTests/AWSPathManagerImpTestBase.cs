@@ -1,4 +1,5 @@
 ﻿using FolderSynchronizer.AWS.Implementations;
+using FolderSynchronizer.Data;
 using NUnit.Framework;
 
 namespace FolderSynchronizer.Tests.AWS.AWSPathManagerImpTests
@@ -13,7 +14,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSPathManagerImpTests
         [SetUp]
         public void SetUp()
         {
-            var configData = new ConfigData { LocalFolderName = FolderName };
+            var configData = new LocalConfigData { LocalFolderName = FolderName };
 
             PathManager = new AWSPathManagerImp(configData);
         }

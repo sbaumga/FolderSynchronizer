@@ -1,4 +1,4 @@
-﻿namespace FolderSynchronizer
+﻿namespace FolderSynchronizer.Data
 {
     public class FileData
     {

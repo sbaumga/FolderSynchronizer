@@ -1,6 +1,7 @@
 ﻿using FolderSynchronizer.Abstractions;
 using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Implementations;
+using FolderSynchronizer.Data;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
@@ -26,7 +27,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileSyncCheckerImpTests
         [TestCase(NullConstructorArg.AWSPathManager)]
         public void NullArgumentTest(NullConstructorArg nullArg)
         {
-            var configData = nullArg == NullConstructorArg.ConfigData ? null : new ConfigData { LocalFolderName = "TestFolder" };
+            var configData = nullArg == NullConstructorArg.ConfigData ? null : new LocalConfigData { LocalFolderName = "TestFolder" };
             var localFileLister = nullArg == NullConstructorArg.LocalFileLister ? null : new Mock<ILocalFileLister>(MockBehavior.Strict).Object;
             var awsFileLister = nullArg == NullConstructorArg.AWSFileLister ? null : new Mock<IAWSFileLister>(MockBehavior.Strict).Object;
             var awsPathManager = nullArg == NullConstructorArg.AWSPathManager ? null : new Mock<IAWSPathManager>(MockBehavior.Strict).Object;

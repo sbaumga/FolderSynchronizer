@@ -1,4 +1,5 @@
 ﻿using FolderSynchronizer.Abstractions;
+using FolderSynchronizer.Data;
 
 namespace FolderSynchronizer.Implementations
 {

@@ -1,4 +1,5 @@
 ﻿using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.AWS.Data;
 using FolderSynchronizer.AWS.Implementations;
 using Moq;
 using NUnit.Framework;
@@ -13,7 +14,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileListerImpTests
         [Test]
         public void NullActionTaker()
         {
-            var configData = new ConfigData { BucketName = "TestBucket" };
+            var configData = new AWSConfigData { BucketName = "TestBucket" };
 
             Should.Throw<ArgumentNullException>(() => new AWSFileListerImp(null, configData));
         }

@@ -1,4 +1,5 @@
 ﻿using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.AWS.Data;
 using FolderSynchronizer.AWS.Implementations;
 using Moq;
 using NUnit.Framework;
@@ -29,7 +30,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
             IAWSActionTaker actionTaker = nullArg == NullConstructorArg.ActionTaker ? null : GetActionTaker();
             IAWSFileLister fileLister = nullArg == NullConstructorArg.FileLister ? null : GetAWSFileLister();
 
-            ConfigData configData = nullArg == NullConstructorArg.ConfigData ? null : GetConfigData();
+            AWSConfigData configData = nullArg == NullConstructorArg.ConfigData ? null : GetConfigData();
 
             Should.Throw<ArgumentNullException>(() => new AWSFileDeleterImp(pathManger, fileLister, actionTaker, configData));
         }
@@ -49,9 +50,9 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
             return new Mock<IAWSFileLister>(MockBehavior.Strict).Object;
         }
 
-        private ConfigData GetConfigData()
+        private AWSConfigData GetConfigData()
         {
-            return new ConfigData { BucketName = "TestBucket" };
+            return new AWSConfigData { BucketName = "TestBucket" };
         }
     }
 }

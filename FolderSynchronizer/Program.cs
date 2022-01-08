@@ -1,4 +1,6 @@
 using FolderSynchronizer;
+using FolderSynchronizer.AWS.Data;
+using FolderSynchronizer.Data;
 using FolderSynchronizer.TypeMapping;
 
 IHost host = Host.CreateDefaultBuilder(args)
@@ -6,11 +8,12 @@ IHost host = Host.CreateDefaultBuilder(args)
         builder.SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", optional: false)
             .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true)
-            .AddUserSecrets<ConfigData>();
+            .AddUserSecrets<LocalConfigData>()
+            .AddUserSecrets<AWSConfigData>();
     })
     .ConfigureServices((context, builder) => {
-        // TODO: use the proper .AddConfiguration method?
-        builder.AddTransient(provider => context.Configuration.GetSection("ConfigData").Get<ConfigData>());
+        builder.AddTransient(provider => context.Configuration.GetSection("LocalConfigData").Get<LocalConfigData>());
+        builder.AddTransient(provider => context.Configuration.GetSection("AWSConfigData").Get<AWSConfigData>());
         ServiceRegistation.Register(builder);
 
         builder.AddHostedService<Worker>();

@@ -38,38 +38,38 @@ namespace FolderSynchronizer.AWS.Implementations
                     return;
 
                 case AWSSynchronizationAction.Upload:
-                    if (file.LocalData == null)
+                    if (file.SourceData == null)
                     {
-                        throw new ArgumentNullException(nameof(file.LocalData), "To upload a file, we need a local path");
+                        throw new ArgumentNullException(nameof(file.SourceData), "To upload a file, we need a local path");
                     }
 
-                    await Uploader.UploadFileAsync(file.LocalData.Path);
+                    await Uploader.UploadFileAsync(file.SourceData.Path);
                     break;
 
                 case AWSSynchronizationAction.Delete:
-                    if (file.RemoteData == null)
+                    if (file.DestinationData == null)
                     {
-                        throw new ArgumentNullException(nameof(file.RemoteData), "To delete a file, we need a remote path");
+                        throw new ArgumentNullException(nameof(file.DestinationData), "To delete a file, we need a remote path");
                     }
 
-                    await Deleter.DeleteRemoteFileAsync(file.RemoteData.Path);
+                    await Deleter.DeleteRemoteFileAsync(file.DestinationData.Path);
                     break;
             }
         }
 
         private AWSSynchronizationAction GetNeededActionForFile(FileSynchronizationStatusData file)
         {
-            if (file.RemoteData == null)
+            if (file.DestinationData == null)
             {
                 return AWSSynchronizationAction.Upload;
             }
 
-            if (file.LocalData == null)
+            if (file.SourceData == null)
             {
                 return AWSSynchronizationAction.Delete;
             }
 
-            if (file.LocalData.LastModifiedDate > file.RemoteData.LastModifiedDate)
+            if (file.SourceData.LastModifiedDate > file.DestinationData.LastModifiedDate)
             {
                 return AWSSynchronizationAction.Upload;
             }

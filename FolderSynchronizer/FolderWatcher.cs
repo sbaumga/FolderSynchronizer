@@ -1,5 +1,5 @@
-﻿using FolderSynchronizer.AWS;
-using FolderSynchronizer.AWS.Abstractions;
+﻿using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.Data;
 
 namespace FolderSynchronizer
 {
@@ -13,7 +13,7 @@ namespace FolderSynchronizer
 
         private FileSystemWatcher Watcher { get; set; }
 
-        public FolderWatcher(ConfigData configData, IAWSFileUploader fileUploader, IAWSFileDeleter fileDeleter, IAWSFileRenamer fileRenamer)
+        public FolderWatcher(LocalConfigData configData, IAWSFileUploader fileUploader, IAWSFileDeleter fileDeleter, IAWSFileRenamer fileRenamer)
         {
             if (configData == null)
             {
@@ -42,7 +42,7 @@ namespace FolderSynchronizer
         }
 
         private void FileCreated(object sender, FileSystemEventArgs e)
-        {            
+        {
             FileUploader.UploadFileAsync(e.FullPath);
         }
 
@@ -55,7 +55,7 @@ namespace FolderSynchronizer
         {
             var oldLocalPath = e.OldFullPath;
             var newLocalPath = e.FullPath;
-            
+
             FileRenamer.RenameFileAsync(oldLocalPath, newLocalPath);
         }
     }

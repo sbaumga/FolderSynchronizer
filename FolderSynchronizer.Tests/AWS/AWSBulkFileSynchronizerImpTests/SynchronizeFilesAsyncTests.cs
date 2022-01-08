@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using FolderSynchronizer.Data;
+using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -50,7 +51,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSBulkFileSynchronizerImpTests
 
         private FileSynchronizationStatusData CreateFileSyncStatusData(FileData localData, FileData remoteData)
         {
-            var syncData = new FileSynchronizationStatusData { LocalData = localData, RemoteData = remoteData };
+            var syncData = new FileSynchronizationStatusData { SourceData = localData, DestinationData = remoteData };
             return syncData;
         }
 

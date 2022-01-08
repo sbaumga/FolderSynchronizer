@@ -1,4 +1,5 @@
 ﻿using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.Data;
 
 namespace FolderSynchronizer.AWS.Implementations
 {
@@ -6,7 +7,7 @@ namespace FolderSynchronizer.AWS.Implementations
     {
         public string FolderName { get; }
 
-        public AWSPathManagerImp(ConfigData configData)
+        public AWSPathManagerImp(LocalConfigData configData)
         {
             if (configData == null)
             {

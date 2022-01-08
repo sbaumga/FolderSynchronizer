@@ -1,5 +1,6 @@
 ﻿using FolderSynchronizer.Abstractions;
 using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.AWS.Data;
 using FolderSynchronizer.AWS.Implementations;
 using Moq;
 using NUnit.Framework;
@@ -33,7 +34,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
             IAWSActionTaker actionTaker = nullArg == NullConstructorArg.ActionTaker ? null : GetActionTaker();
             ILocalFileLister fileLister = nullArg == NullConstructorArg.FileLister ? null : GetLocalFileLister();
 
-            ConfigData configData = nullArg == NullConstructorArg.ConfigData ? null : GetConfigData();
+            AWSConfigData configData = nullArg == NullConstructorArg.ConfigData ? null : GetConfigData();
 
             Should.Throw<ArgumentNullException>(() => new AWSFileUploaderImp(logger, pathManger, actionTaker, fileLister, configData));
         }
@@ -58,9 +59,9 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
             return new Mock<ILocalFileLister>(MockBehavior.Strict).Object;
         }
 
-        private ConfigData GetConfigData()
+        private AWSConfigData GetConfigData()
         {
-            return new ConfigData { BucketName = "TestBucket" };
+            return new AWSConfigData { BucketName = "TestBucket" };
         }
     }
 }

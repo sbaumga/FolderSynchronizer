@@ -1,8 +1,10 @@
-﻿namespace FolderSynchronizer
+﻿using FolderSynchronizer.Data;
+
+namespace FolderSynchronizer
 {
     public class FileSynchronizationStatusData
     {
-        public FileData? LocalData { get; set; }
-        public FileData? RemoteData { get; set; }
+        public FileData? SourceData { get; set; }
+        public FileData? DestinationData { get; set; }
     }
 }

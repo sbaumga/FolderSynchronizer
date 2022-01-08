@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.AWS.Data;
 using FolderSynchronizer.AWS.Implementations;
 using Moq;
 using NUnit.Framework;
@@ -30,7 +31,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
 
             MockActionTaker = new Mock<IAWSActionTaker>(MockBehavior.Strict);
 
-            var configData = new ConfigData
+            var configData = new AWSConfigData
             {
                 BucketName = BucketName,
             };

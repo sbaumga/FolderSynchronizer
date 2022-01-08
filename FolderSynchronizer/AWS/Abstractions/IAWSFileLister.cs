@@ -1,4 +1,6 @@
-﻿namespace FolderSynchronizer.AWS.Abstractions
+﻿using FolderSynchronizer.Data;
+
+namespace FolderSynchronizer.AWS.Abstractions
 {
     public interface IAWSFileLister
     {
