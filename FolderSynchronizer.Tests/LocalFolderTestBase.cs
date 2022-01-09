@@ -44,7 +44,7 @@ namespace FolderSynchronizer.Tests
         }
 
         [TearDown]
-        public void TearDown()
+        public virtual void TearDown()
         {
             DeleteTestFolder();
         }

@@ -7,6 +7,11 @@ namespace FolderSynchronizer.Implementations
     {
         public FileData MakeFileDataFromLocalPath(string path)
         {
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException(path);
+            }
+
             var data = new FileData
             {
                 Path = path,
