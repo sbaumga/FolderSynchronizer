@@ -1,12 +1,8 @@
-﻿using FolderSynchronizer.AWS.Abstractions;
+﻿using FolderSynchronizer.Abstractions;
+using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Implementations;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FolderSynchronizer.Tests.AWS.AWSBulkFileSynchronizerImpTests
 {
@@ -16,6 +12,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSBulkFileSynchronizerImpTests
         protected Mock<IAWSFileSyncChecker> MockSyncChecker { get; set; }
         protected Mock<IAWSFileUploader> MockFileUploader { get; set; }
         protected Mock<IAWSFileDeleter> MockFileDeleter { get; set; }
+        protected Mock<ISynchronizationActionDecider> MockSyncActionDecider { get; set; }
 
         protected IAWSBulkFileSynchronizer Synchronizer { get; set; }
 
@@ -28,7 +25,9 @@ namespace FolderSynchronizer.Tests.AWS.AWSBulkFileSynchronizerImpTests
 
             MockFileDeleter = new Mock<IAWSFileDeleter>(MockBehavior.Strict);
 
-            Synchronizer = new AWSBulkFileSynchronizerImp(MockSyncChecker.Object, MockFileUploader.Object, MockFileDeleter.Object);
+            MockSyncActionDecider = new Mock<ISynchronizationActionDecider>(MockBehavior.Strict);
+
+            Synchronizer = new AWSBulkFileSynchronizerImp(MockSyncChecker.Object, MockFileUploader.Object, MockFileDeleter.Object, MockSyncActionDecider.Object);
         }
     }
 }

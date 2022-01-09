@@ -1,5 +1,7 @@
-﻿using FolderSynchronizer.AWS.Abstractions;
-using FolderSynchronizer.AWS.Enums;
+﻿using FolderSynchronizer.Abstractions;
+using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.AWS.Exceptions;
+using FolderSynchronizer.Enums;
 
 namespace FolderSynchronizer.AWS.Implementations
 {
@@ -8,12 +10,18 @@ namespace FolderSynchronizer.AWS.Implementations
         private IAWSFileSyncChecker FileSyncChecker { get; }
         private IAWSFileUploader Uploader { get; }
         private IAWSFileDeleter Deleter { get; }
+        private ISynchronizationActionDecider SyncActionDecider { get; }
 
-        public AWSBulkFileSynchronizerImp(IAWSFileSyncChecker awsFileSyncChecker, IAWSFileUploader uploader, IAWSFileDeleter deleter)
+        public AWSBulkFileSynchronizerImp(
+            IAWSFileSyncChecker awsFileSyncChecker,
+            IAWSFileUploader uploader,
+            IAWSFileDeleter deleter,
+            ISynchronizationActionDecider synchronizationActionDecider)
         {
             FileSyncChecker = awsFileSyncChecker ?? throw new ArgumentNullException(nameof(awsFileSyncChecker));
             Uploader = uploader ?? throw new ArgumentNullException(nameof(uploader));
             Deleter = deleter ?? throw new ArgumentNullException(nameof(deleter));
+            SyncActionDecider = synchronizationActionDecider ?? throw new ArgumentNullException(nameof(synchronizationActionDecider));
         }
 
         public async Task SynchronizeFilesAsync()
@@ -31,50 +39,30 @@ namespace FolderSynchronizer.AWS.Implementations
 
         private async Task TakeActionOnFileIfNeeded(FileSynchronizationStatusData file)
         {
-            var action = GetNeededActionForFile(file);
+            var action = SyncActionDecider.GetNeededActionForFile(file);
             switch (action)
             {
-                case AWSSynchronizationAction.None:
+                case FileSynchronizationAction.None:
                     return;
 
-                case AWSSynchronizationAction.Upload:
+                case FileSynchronizationAction.Upload:
                     if (file.SourceData == null)
                     {
-                        throw new ArgumentNullException(nameof(file.SourceData), "To upload a file, we need a local path");
+                        throw new AWSFileSynchronizationException($"An {FileSynchronizationAction.Upload} action was returned with no source file to upload");
                     }
 
                     await Uploader.UploadFileAsync(file.SourceData.Path);
                     break;
 
-                case AWSSynchronizationAction.Delete:
+                case FileSynchronizationAction.Delete:
                     if (file.DestinationData == null)
                     {
-                        throw new ArgumentNullException(nameof(file.DestinationData), "To delete a file, we need a remote path");
+                        throw new AWSFileSynchronizationException($"An {FileSynchronizationAction.Delete} action was returned with no destination file to delete");
                     }
 
                     await Deleter.DeleteRemoteFileAsync(file.DestinationData.Path);
                     break;
             }
-        }
-
-        private AWSSynchronizationAction GetNeededActionForFile(FileSynchronizationStatusData file)
-        {
-            if (file.DestinationData == null)
-            {
-                return AWSSynchronizationAction.Upload;
-            }
-
-            if (file.SourceData == null)
-            {
-                return AWSSynchronizationAction.Delete;
-            }
-
-            if (file.SourceData.LastModifiedDate > file.DestinationData.LastModifiedDate)
-            {
-                return AWSSynchronizationAction.Upload;
-            }
-
-            return AWSSynchronizationAction.None;
         }
     }
 }
