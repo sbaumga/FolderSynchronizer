@@ -43,7 +43,7 @@ namespace FolderSynchronizer.Tests.TypeMappingTests
 
         private void VerifyImplementationTypeIsRegistered(ServiceCollection serviceCollection, Type type)
         {
-            serviceCollection.ShouldContain(d => d.ImplementationType == type);
+            serviceCollection.ShouldContain(d => d.ImplementationType == type, $"Missing registration for {type.Name}");
         }
     }
 }

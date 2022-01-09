@@ -15,16 +15,23 @@ namespace FolderSynchronizer.TypeMapping
 
         private static void RegisterSharedServices(IServiceCollection builder)
         {
-            builder.AddTransient<FolderWatcher>();
-
             builder.AddTransient(typeof(Abstractions.ILogger<>), typeof(LoggerImp<>));
 
             builder.AddTransient<ILocalFileLister, LocalFileListerImp>();
             builder.AddTransient<ISerializer, JsonSerializerImp>();
+            
+            builder.AddTransient<ISynchronizationActionDecider, SynchronizationActionDeciderImp>();
+            builder.AddTransient<IFileDataCreator, FileDataCreatorImp>();
+
+            RegisterSavedFileListServices(builder);
+        }
+
+        private static void RegisterSavedFileListServices(IServiceCollection builder)
+        {
             builder.AddTransient<IFileDataListPersister, FileDataListPersisterImp>();
             builder.AddTransient<ISavedFileListSyncChecker, SavedFileListSyncCheckerImp>();
-            builder.AddTransient<ISynchronizationActionDecider, SynchronizationActionDeciderImp>();
             builder.AddTransient<ISavedFileListBulkSynchronizer, SavedFileListBulkSynchronizerImp>();
+            builder.AddTransient<ISavedFileListRecordUpdater, SavedFileListRecordUpdaterImp>();
         }
 
         private static void RegisterAWSThings(IServiceCollection builder)

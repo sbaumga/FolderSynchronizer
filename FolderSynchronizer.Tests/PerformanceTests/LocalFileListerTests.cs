@@ -19,7 +19,7 @@ namespace FolderSynchronizer.Tests.PerformanceTests
         [SetUp]
         public void SetUp()
         {
-            FileLister = new LocalFileListerImp();
+            FileLister = new LocalFileListerImp(new FileDataCreatorImp());
         }
 
         [Test]

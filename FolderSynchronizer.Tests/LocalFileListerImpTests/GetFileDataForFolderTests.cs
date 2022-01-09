@@ -13,7 +13,7 @@ namespace FolderSynchronizer.Tests.LocalFileListerImpTests
 
         protected override void VerifyFilePathExistsInTestableFunctionResult(string filePath, IEnumerable<FileData> testableFunctionResult)
         {
-            testableFunctionResult.ShouldContain(d => d.Path == filePath && d.LastModifiedDate > System.DateTime.Now.AddMinutes(2));
+            testableFunctionResult.ShouldContain(d => d.Path == filePath && d.LastModifiedDate > System.DateTime.Now.AddMinutes(-2) && d.LastModifiedDate < System.DateTime.Now.AddMinutes(2));
         }
     }
 }

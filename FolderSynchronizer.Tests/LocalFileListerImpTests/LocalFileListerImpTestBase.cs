@@ -1,4 +1,7 @@
-﻿using FolderSynchronizer.Implementations;
+﻿using FolderSynchronizer.Abstractions;
+using FolderSynchronizer.Data;
+using FolderSynchronizer.Implementations;
+using Moq;
 using NUnit.Framework;
 using Shouldly;
 using System.Collections.Generic;
@@ -9,13 +12,18 @@ namespace FolderSynchronizer.Tests.LocalFileListerImpTests
 {
     public abstract class LocalFileListerImpTestBase<T> : LocalFolderTestBase
     {
+        protected Mock<IFileDataCreator> FileDataCreatorMock { get; set; }
+
         protected LocalFileListerImp FileLister { get; set; }
 
         public override void SetUp()
         {
             base.SetUp();
 
-            FileLister = new LocalFileListerImp();
+            FileDataCreatorMock = new Mock<IFileDataCreator>(MockBehavior.Strict);
+            FileDataCreatorMock.Setup(c => c.MakeFileDataFromLocalPath(It.IsAny<string>())).Returns<string>(path => new FileData { Path = path, LastModifiedDate = System.DateTime.Now });
+
+            FileLister = new LocalFileListerImp(FileDataCreatorMock.Object);
         }
 
         [Test]
