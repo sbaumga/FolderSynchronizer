@@ -1,4 +1,5 @@
-﻿using FolderSynchronizer.Enums;
+﻿using FolderSynchronizer.Data;
+using FolderSynchronizer.Enums;
 
 namespace FolderSynchronizer.Abstractions
 {

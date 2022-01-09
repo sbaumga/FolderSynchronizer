@@ -1,4 +1,6 @@
-﻿namespace FolderSynchronizer.Abstractions
+﻿using FolderSynchronizer.Data;
+
+namespace FolderSynchronizer.Abstractions
 {
     public interface IFileSyncChecker
     {

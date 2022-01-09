@@ -1,6 +1,7 @@
 ﻿using FolderSynchronizer.Abstractions;
 using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Exceptions;
+using FolderSynchronizer.Data;
 using FolderSynchronizer.Enums;
 
 namespace FolderSynchronizer.AWS.Implementations

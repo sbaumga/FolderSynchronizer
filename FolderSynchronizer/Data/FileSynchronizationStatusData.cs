@@ -1,6 +1,4 @@
-﻿using FolderSynchronizer.Data;
-
-namespace FolderSynchronizer
+﻿namespace FolderSynchronizer.Data
 {
     public class FileSynchronizationStatusData
     {
