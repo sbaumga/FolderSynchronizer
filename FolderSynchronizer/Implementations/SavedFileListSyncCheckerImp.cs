@@ -29,7 +29,7 @@ namespace FolderSynchronizer.Implementations
 
         protected override string SourcePathToDestinationPath(string sourcePath)
         {
-            throw new NotImplementedException();
+            return sourcePath;
         }
     }
 }

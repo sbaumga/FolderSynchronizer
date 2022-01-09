@@ -1,83 +1,45 @@
-﻿using NUnit.Framework;
-using Shouldly;
-using System;
+﻿using FolderSynchronizer.Abstractions;
+using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.AWS.Implementations;
+using FolderSynchronizer.Data;
+using Moq;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace FolderSynchronizer.Tests.AWS.AWSFileSyncCheckerImpTests
 {
-    public class GetSynchronizationStatusForFilesAsyncTests : AWSFileSyncCheckerImpTestBase
+    public class GetSynchronizationStatusForFilesAsyncTests : GetSynchronizationStatusForFilesAsyncTestBase<AWSFileSyncCheckerImp>
     {
-        [Test]
-        public async Task NoFilesTest()
+        protected string LocalFolder => "TestFolder";
+
+        protected Mock<ILocalFileLister> LocalFileListerMock { get; set; }
+        protected Mock<IAWSFileLister> AWSFileListerMock { get; set; }
+        protected Mock<IAWSPathManager> PathManagerMock { get; set; }
+
+        protected override void InitializeFileSyncChecker()
         {
-            SetUpLocalFileData();
-            SetUpRemoteFileData();
+            var configData = new LocalConfigData { LocalFolderName = LocalFolder };
 
-            var result = await FileSyncChecker.GetSynchronizationStatusForFilesAsync();
+            LocalFileListerMock = new Mock<ILocalFileLister>(MockBehavior.Strict);
+            AWSFileListerMock = new Mock<IAWSFileLister>(MockBehavior.Strict);
+            PathManagerMock = new Mock<IAWSPathManager>(MockBehavior.Strict);
 
-            result.ShouldBeEmpty();
+            FileSyncChecker = new AWSFileSyncCheckerImp(configData, LocalFileListerMock.Object, AWSFileListerMock.Object, PathManagerMock.Object);
         }
 
-        [Test]
-        public async Task LocalFileWithNoRemote()
+        protected override void SetUpSourceFileData(params FileData[] data)
         {
-            var localData = CreateFileData("TestFile");
-            SetUpGetRemotePath(localData.Path, "TestFileRemote");
-            SetUpLocalFileData(localData);
-
-            SetUpRemoteFileData();
-
-            var result = await FileSyncChecker.GetSynchronizationStatusForFilesAsync();
-
-            result.Count().ShouldBe(1);
-
-            var syncData = result.Single();
-
-            syncData.SourceData.ShouldBe(localData);
-            syncData.DestinationData.ShouldBeNull();
+            LocalFileListerMock.Setup(x => x.GetFileDataForFolder(LocalFolder)).Returns(data);
         }
 
-        [Test]
-        public async Task RemoteFileWithNoLocal()
+        protected override void SetUpDestinationFileData(params FileData[] data)
         {
-            SetUpLocalFileData();
-
-            var remoteData = CreateFileData("TestFile");
-            SetUpRemoteFileData(remoteData);
-
-            var result = await FileSyncChecker.GetSynchronizationStatusForFilesAsync();
-
-            result.Count().ShouldBe(1);
-
-            var syncData = result.Single();
-
-            syncData.SourceData.ShouldBeNull();
-            syncData.DestinationData.ShouldBe(remoteData);
+            AWSFileListerMock.Setup(x => x.GetFileDataAsync()).Returns(Task.FromResult(data.AsEnumerable()));
         }
 
-        [Test]
-        public async Task OneLocalAndRemoteFileMatch()
+        protected override void SetUpGetDestinationPath(string sourcePath, string destinationPath)
         {
-            var fileData = CreateLocalAndRemoteFiles(Tuple.Create("TestFile", "TestFileRemote"));
-
-            var result = await FileSyncChecker.GetSynchronizationStatusForFilesAsync();
-
-            VerifyFileData(fileData, result);
-        }
-
-        [Test]
-        public async Task ThreeLocalAndRemoteFileMatch()
-        {
-            var fileData = CreateLocalAndRemoteFiles(
-                Tuple.Create("TestFileA", "TestFileARemote"),
-                Tuple.Create("TestFileB", "TestFileBRemote"),
-                Tuple.Create("TestFileC", "TestFileCRemote")
-            );
-
-            var result = await FileSyncChecker.GetSynchronizationStatusForFilesAsync();
-
-            VerifyFileData(fileData, result);
+            PathManagerMock.Setup(p => p.GetRemotePath(sourcePath)).Returns(destinationPath);
         }
     }
 }

@@ -12,11 +12,23 @@ namespace FolderSynchronizer.Tests.FileDataListPersisterImpTests
 {
     public class LoadAsyncTests : FileDataListPersisterImpTestBase
     {
-        public override void SetUp()
+        [Test]
+        public async Task NoFileTest()
         {
-            base.SetUp();
+            var data = await FileDataListPersister.LoadAsync();
+            data.ShouldBeEmpty();
+        }
 
+        [Test]
+        public async Task NoItemsReturned()
+        {
             WriteToFile();
+
+            var expectedData = Array.Empty<FileData>();
+            SetUpMockSerializer(expectedData);
+
+            var data = await FileDataListPersister.LoadAsync();
+            data.ShouldBeEmpty();
         }
 
         private void WriteToFile()
@@ -26,16 +38,6 @@ namespace FolderSynchronizer.Tests.FileDataListPersisterImpTests
 
         private string TestFileContents => "Test";
 
-        [Test]
-        public async Task NoItemsReturned()
-        {
-            var expectedData = Array.Empty<FileData>();
-            SetUpMockSerializer(expectedData);
-
-            var data = await FileDataListPersister.LoadAsync();
-            data.ShouldBeEquivalentTo(expectedData);
-        }
-
         private void SetUpMockSerializer(FileData[] data)
         {
             MockSerializer.Setup(s => s.Deserialize<IEnumerable<FileData>>(TestFileContents)).Returns(data);
@@ -44,6 +46,8 @@ namespace FolderSynchronizer.Tests.FileDataListPersisterImpTests
         [Test]
         public async Task OneItemReturned()
         {
+            WriteToFile();
+
             var expectedData = new FileData[] { new FileData { } };
             SetUpMockSerializer(expectedData);
 
@@ -54,6 +58,8 @@ namespace FolderSynchronizer.Tests.FileDataListPersisterImpTests
         [Test]
         public async Task ThreeItemsReturned()
         {
+            WriteToFile();
+
             var expectedData = new FileData[] { new FileData { }, new FileData { }, new FileData { } };
             SetUpMockSerializer(expectedData);
 
