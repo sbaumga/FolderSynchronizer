@@ -24,6 +24,7 @@ namespace FolderSynchronizer.TypeMapping
             builder.AddTransient<IFileDataListPersister, FileDataListPersisterImp>();
             builder.AddTransient<ISavedFileListSyncChecker, SavedFileListSyncCheckerImp>();
             builder.AddTransient<ISynchronizationActionDecider, SynchronizationActionDeciderImp>();
+            builder.AddTransient<ISavedFileListBulkSynchronizer, SavedFileListBulkSynchronizerImp>();
         }
 
         private static void RegisterAWSThings(IServiceCollection builder)

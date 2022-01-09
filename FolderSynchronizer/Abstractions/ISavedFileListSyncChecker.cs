@@ -1,6 +1,6 @@
 ﻿namespace FolderSynchronizer.Abstractions
 {
-    public interface ISavedFileListSyncChecker : IFileSyncChecker
+    public interface ISavedFileListSyncChecker : IFileSynchronizationChecker
     {
     }
 }

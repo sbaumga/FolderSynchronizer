@@ -2,7 +2,7 @@
 
 namespace FolderSynchronizer.AWS.Abstractions
 {
-    public interface IAWSFileSyncChecker : IFileSyncChecker
+    public interface IAWSFileSyncChecker : IFileSynchronizationChecker
     {
     }
 }

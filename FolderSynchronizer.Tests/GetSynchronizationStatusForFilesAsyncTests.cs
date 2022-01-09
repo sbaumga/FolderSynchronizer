@@ -11,7 +11,7 @@ namespace FolderSynchronizer.Tests
 {
     [TestFixture]
     public abstract class GetSynchronizationStatusForFilesAsyncTestBase<TSyncChecker>
-        where TSyncChecker : IFileSyncChecker
+        where TSyncChecker : IFileSynchronizationChecker
     {
         protected TSyncChecker FileSyncChecker { get; set; }
 

@@ -2,7 +2,7 @@
 
 namespace FolderSynchronizer.Abstractions
 {
-    public interface IFileSyncChecker
+    public interface IFileSynchronizationChecker
     {
         Task<IEnumerable<FileSynchronizationStatusData>> GetSynchronizationStatusForFilesAsync();
     }
