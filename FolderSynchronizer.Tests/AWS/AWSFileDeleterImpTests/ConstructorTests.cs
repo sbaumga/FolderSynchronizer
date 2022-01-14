@@ -1,4 +1,5 @@
-﻿using FolderSynchronizer.AWS.Abstractions;
+﻿using FolderSynchronizer.Abstractions;
+using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Data;
 using FolderSynchronizer.AWS.Implementations;
 using Moq;
@@ -16,7 +17,8 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
             PathManger,
             ActionTaker,
             FileLister,
-            ConfigData
+            ConfigData,
+            SavedFileListRecordDeleter
         }
 
         [Test]
@@ -24,15 +26,17 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
         [TestCase(NullConstructorArg.ActionTaker)]
         [TestCase(NullConstructorArg.FileLister)]
         [TestCase(NullConstructorArg.ConfigData)]
+        [TestCase(NullConstructorArg.SavedFileListRecordDeleter)]
         public void ArgumentTest(NullConstructorArg nullArg)
         {
             IAWSPathManager pathManger = nullArg == NullConstructorArg.PathManger ? null : GetPathManger();
             IAWSActionTaker actionTaker = nullArg == NullConstructorArg.ActionTaker ? null : GetActionTaker();
             IAWSFileLister fileLister = nullArg == NullConstructorArg.FileLister ? null : GetAWSFileLister();
+            ISavedFileListRecordDeleter savedFileListRecordDeleter = nullArg == NullConstructorArg.SavedFileListRecordDeleter ? null : GetSavedFileListRecordDeleter();
 
             AWSConfigData configData = nullArg == NullConstructorArg.ConfigData ? null : GetConfigData();
 
-            Should.Throw<ArgumentNullException>(() => new AWSFileDeleterImp(pathManger, fileLister, actionTaker, configData));
+            Should.Throw<ArgumentNullException>(() => new AWSFileDeleterImp(pathManger, fileLister, actionTaker, configData, savedFileListRecordDeleter));
         }
 
         private IAWSPathManager GetPathManger()
@@ -48,6 +52,11 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
         private IAWSFileLister GetAWSFileLister()
         {
             return new Mock<IAWSFileLister>(MockBehavior.Strict).Object;
+        }
+
+        private ISavedFileListRecordDeleter GetSavedFileListRecordDeleter()
+        {
+            return new Mock<ISavedFileListRecordDeleter>(MockBehavior.Strict).Object;
         }
 
         private AWSConfigData GetConfigData()

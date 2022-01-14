@@ -15,7 +15,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
         protected abstract string DeletionPath { get; }
 
         [Test]
-        public void DeleteFile_Failure()
+        public virtual void DeleteFile_Failure()
         {
             SetUpPathIsFile(DeletionPath, true);
             SetUpDoDeleteAction(DeletionPath, HttpStatusCode.BadRequest);
@@ -25,15 +25,15 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
             VerifyDeletionActionTaken(DeletionPath, Times.Once);
         }
 
+        protected abstract void DeletionFunction(string path);
+
         private void VerifyDeletionActionTaken(string fileKey, Func<Times> times)
         {
             MockActionTaker.Verify(a => a.DoDeleteAction(It.Is<DeleteObjectRequest>(r => r.Key == fileKey)), times);
         }
 
-        protected abstract void DeletionFunction(string path);
-
         [Test]
-        public void DeleteFile_Success()
+        public virtual void DeleteFile_Success()
         {
             SetUpPathIsFile(DeletionPath, true);
             SetUpDoDeleteAction(DeletionPath, HttpStatusCode.OK);
@@ -62,7 +62,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
         }
 
         [Test]
-        public void DeleteSingleFileFolder_Success()
+        public virtual void DeleteSingleFileFolder_Success()
         {
             SingleFileFolderSetUp(HttpStatusCode.OK);
 
@@ -82,7 +82,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
         }
 
         [Test]
-        public void DeleteSingleFileFolder_Failure()
+        public virtual void DeleteSingleFileFolder_Failure()
         {
             SingleFileFolderSetUp(HttpStatusCode.BadRequest);
 
@@ -92,7 +92,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
         }
 
         [Test]
-        public void MultipleFileFolder_AllUploadsSucceed()
+        public virtual void MultipleFileFolder_AllUploadsSucceed()
         {
             MultipleFileFolderSetUp(MultipleFileFolderFilePaths.Select(p => Tuple.Create(p, HttpStatusCode.OK)));
 
@@ -129,7 +129,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
         }
 
         [Test]
-        public void MultipleFileFolder_AllUploadsFail()
+        public virtual void MultipleFileFolder_AllUploadsFail()
         {
             MultipleFileFolderSetUp(MultipleFileFolderFilePaths.Select(p => Tuple.Create(p, HttpStatusCode.BadRequest)));
 
@@ -139,13 +139,18 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
         }
 
         [Test]
-        public void MultipleFileFolder_SomeUploadsFail()
+        public virtual void MultipleFileFolder_SomeUploadsFail()
         {
-            MultipleFileFolderSetUp(MultipleFileFolderFilePaths.Select((p, i) => Tuple.Create(p, i % 2 == 0 ? HttpStatusCode.OK : HttpStatusCode.BadRequest)));
+            MultipleFileFolderSetUp(MixedSuccessTest_FailurePaths.Select(p => Tuple.Create(p, HttpStatusCode.BadRequest)));
+            MultipleFileFolderSetUp(MixedSuccessTest_SuccessPaths.Select(p => Tuple.Create(p, HttpStatusCode.OK)));
 
             Should.Throw<Exception>(() => DeletionFunction(DeletionPath));
 
             VerifyMultipleFileFolderDeletesAttempted();
         }
+
+        protected IEnumerable<string> MixedSuccessTest_FailurePaths => MultipleFileFolderFilePaths.Where((p, i) => i % 2 != 0);
+
+        protected IEnumerable<string> MixedSuccessTest_SuccessPaths => MultipleFileFolderFilePaths.Where((p, i) => i % 2 == 0);
     }
 }

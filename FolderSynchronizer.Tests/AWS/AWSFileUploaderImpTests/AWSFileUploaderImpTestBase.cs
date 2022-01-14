@@ -19,6 +19,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
         protected Mock<IAWSPathManager> MockPathManager { get; set; }
         protected Mock<IAWSActionTaker> MockActionTaker { get; set; }
         protected Mock<ILocalFileLister> MockLocalFileLister { get; set; }
+        protected Mock<ISavedFileListRecordUpdater> MockSavedFileListRecordUpdater { get; set; }
 
         protected string BucketName { get; set; }
 
@@ -36,10 +37,12 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
 
             MockLocalFileLister = new Mock<ILocalFileLister>(MockBehavior.Strict);
 
+            MockSavedFileListRecordUpdater = new Mock<ISavedFileListRecordUpdater>(MockBehavior.Strict);
+
             BucketName = "TestBucket";
             var configData = new AWSConfigData { BucketName = BucketName };
 
-            Uploader = new AWSFileUploaderImp(MockLogger.Object, MockPathManager.Object, MockActionTaker.Object, MockLocalFileLister.Object, configData);
+            Uploader = new AWSFileUploaderImp(MockLogger.Object, MockPathManager.Object, MockActionTaker.Object, MockLocalFileLister.Object, configData, MockSavedFileListRecordUpdater.Object);
         }
 
         protected void SetUpIsPathFile(bool returnValue, string path)
@@ -70,6 +73,26 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
                 request.Key.ShouldBe(expectedRemotePath);
                 request.BucketName.ShouldBe(BucketName);
             });
+        }
+
+        protected void SetUpSavedFileListRecordUpdater(string localPath)
+        {
+            MockSavedFileListRecordUpdater.Setup(u => u.AddOrUpdateRecordAsync(localPath)).Returns(Task.CompletedTask);
+        }
+
+        protected void VerifySavedFileListUpdatedWithPath(string localPath)
+        {
+            MockSavedFileListRecordUpdater.Verify(u => u.AddOrUpdateRecordAsync(localPath), Times.Once);
+        }
+
+        protected void VerifySavedFileListNotUpdatedWithPath(string localPath)
+        {
+            MockSavedFileListRecordUpdater.Verify(u => u.AddOrUpdateRecordAsync(localPath), Times.Never);
+        }
+
+        protected void VerifySavedFileListNotUpdated()
+        {
+            MockSavedFileListRecordUpdater.Verify(u => u.AddOrUpdateRecordAsync(It.IsAny<string>()), Times.Never);
         }
     }
 }

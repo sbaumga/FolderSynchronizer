@@ -1,4 +1,5 @@
 ﻿using Amazon.S3.Model;
+using FolderSynchronizer.Abstractions;
 using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Data;
 
@@ -9,14 +10,21 @@ namespace FolderSynchronizer.AWS.Implementations
         private IAWSPathManager PathManager { get; }
         private IAWSFileLister FileLister { get; }
         private IAWSActionTaker ActionTaker { get; }
+        private ISavedFileListRecordDeleter SavedFileListRecordDeleter { get; }
 
         private string BucketName { get; }
 
-        public AWSFileDeleterImp(IAWSPathManager pathManager, IAWSFileLister fileLister, IAWSActionTaker actionTaker, AWSConfigData configData)
+        public AWSFileDeleterImp(
+            IAWSPathManager pathManager,
+            IAWSFileLister fileLister,
+            IAWSActionTaker actionTaker,
+            AWSConfigData configData,
+            ISavedFileListRecordDeleter savedFileListRecordDeleter)
         {
             PathManager = pathManager ?? throw new ArgumentNullException(nameof(pathManager));
             FileLister = fileLister ?? throw new ArgumentNullException(nameof(fileLister));
             ActionTaker = actionTaker ?? throw new ArgumentNullException(nameof(actionTaker));
+            SavedFileListRecordDeleter = savedFileListRecordDeleter ?? throw new ArgumentNullException(nameof(savedFileListRecordDeleter));
 
             if (configData == null)
             {
@@ -29,6 +37,8 @@ namespace FolderSynchronizer.AWS.Implementations
         {
             var remotePath = PathManager.GetRemotePath(localPath);
             await DeleteRemoteFileAsync(remotePath);
+
+            await SavedFileListRecordDeleter.DeleteRecordAsync(localPath);
         }
 
         public async Task DeleteRemoteFileAsync(string remotePath)

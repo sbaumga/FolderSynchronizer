@@ -13,16 +13,24 @@ namespace FolderSynchronizer.AWS.Implementations
         private IAWSPathManager PathManager { get; }
         private IAWSActionTaker ActionTaker { get; }
         private ILocalFileLister LocalFileLister { get; }
+        private ISavedFileListRecordUpdater SavedFileListRecordUpdater { get; }
 
         private string BucketName { get; }
 
-        public AWSFileUploaderImp(FolderSynchronizer.Abstractions.ILogger<AWSFileUploaderImp> logger, IAWSPathManager pathManager, IAWSActionTaker actionTaker, ILocalFileLister localFileLister, AWSConfigData configData)
+        public AWSFileUploaderImp(
+            FolderSynchronizer.Abstractions.ILogger<AWSFileUploaderImp> logger,
+            IAWSPathManager pathManager,
+            IAWSActionTaker actionTaker,
+            ILocalFileLister localFileLister,
+            AWSConfigData configData,
+            ISavedFileListRecordUpdater savedFileListRecordUpdater)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             PathManager = pathManager ?? throw new ArgumentNullException(nameof(pathManager));
             ActionTaker = actionTaker ?? throw new ArgumentNullException(nameof(actionTaker));
-            LocalFileLister = localFileLister ?? throw new ArgumentNullException();
+            LocalFileLister = localFileLister ?? throw new ArgumentNullException(nameof(localFileLister));
+            SavedFileListRecordUpdater = savedFileListRecordUpdater ?? throw new ArgumentNullException(nameof(savedFileListRecordUpdater));
 
             if (configData == null)
             {
@@ -62,6 +70,8 @@ namespace FolderSynchronizer.AWS.Implementations
             {
                 throw new AWSFileUploadException($"Upload of file \"{localPath}\" failed: {response}");
             }
+
+            await SavedFileListRecordUpdater.AddOrUpdateRecordAsync(localPath);
 
             LogUploadFileCompleteMessage(localPath, remotePath);
         }

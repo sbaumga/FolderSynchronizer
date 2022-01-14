@@ -61,6 +61,11 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
             SetUpRemotePath(localPath, remotePath);
             SetUpIsPathFile(true, remotePath);
             SetUpUploadAction(responseStatus, localPath, remotePath);
+
+            if (responseStatus == HttpStatusCode.OK)
+            {
+                SetUpSavedFileListRecordUpdater(localPath);
+            }
         }
 
         [Test]
@@ -72,6 +77,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
             Should.Throw<AWSFileUploadException>(async () => await Uploader.UploadFolderAsync(folderPath));
 
             MockActionTaker.Verify(a => a.DoUploadAction(It.IsAny<PutObjectRequest>()), Times.Once);
+            VerifySavedFileListNotUpdated();
         }
 
         [Test]

@@ -1,14 +1,19 @@
 ﻿using FolderSynchronizer.Abstractions;
 using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.Implementations;
+using Moq;
 
 namespace FolderSynchronizer.Tests.SavedFileListBulkSynchronizerImpTests
 {
     public class SynchronizeFilesAsyncTests : BulkFileSynchronizerTestBase<SavedFileListBulkSynchronizerImp, ISavedFileListSyncChecker>
     {
+        private Mock<ISavedFileListRecordDeleter> MockSavedFileListRecordDeleter { get; set; }
+
         protected override SavedFileListBulkSynchronizerImp CreateBulkSynchronizer(ISavedFileListSyncChecker syncChecker, IAWSFileUploader fileUploader, IAWSFileDeleter fileDeleter, ISynchronizationActionDecider synchronizationActionDecider)
         {
-            return new SavedFileListBulkSynchronizerImp(syncChecker, fileUploader, fileDeleter, synchronizationActionDecider);
+            MockSavedFileListRecordDeleter = new Mock<ISavedFileListRecordDeleter>(MockBehavior.Strict);
+
+            return new SavedFileListBulkSynchronizerImp(syncChecker, fileUploader, fileDeleter, synchronizationActionDecider, MockSavedFileListRecordDeleter.Object);
         }
     }
 }

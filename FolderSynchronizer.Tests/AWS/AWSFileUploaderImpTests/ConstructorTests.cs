@@ -18,7 +18,8 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
             PathManger,
             ActionTaker,
             FileLister,
-            ConfigData
+            ConfigData,
+            SavedFileListRecordUpdater
         }
 
         [Test]
@@ -27,16 +28,18 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
         [TestCase(NullConstructorArg.ActionTaker)]
         [TestCase(NullConstructorArg.FileLister)]
         [TestCase(NullConstructorArg.ConfigData)]
-        public void NullLoggerTest(NullConstructorArg nullArg)
+        [TestCase(NullConstructorArg.SavedFileListRecordUpdater)]
+        public void NullArgumentTest(NullConstructorArg nullArg)
         {
             ILogger<AWSFileUploaderImp> logger = nullArg == NullConstructorArg.Logger ? null : GetLogger();
             IAWSPathManager pathManger = nullArg == NullConstructorArg.PathManger ? null : GetPathManger();
             IAWSActionTaker actionTaker = nullArg == NullConstructorArg.ActionTaker ? null : GetActionTaker();
             ILocalFileLister fileLister = nullArg == NullConstructorArg.FileLister ? null : GetLocalFileLister();
+            ISavedFileListRecordUpdater savedFileListRecordUpdater = nullArg == NullConstructorArg.SavedFileListRecordUpdater ? null : GetSavedFileListRecordUpdater();
 
             AWSConfigData configData = nullArg == NullConstructorArg.ConfigData ? null : GetConfigData();
 
-            Should.Throw<ArgumentNullException>(() => new AWSFileUploaderImp(logger, pathManger, actionTaker, fileLister, configData));
+            Should.Throw<ArgumentNullException>(() => new AWSFileUploaderImp(logger, pathManger, actionTaker, fileLister, configData, savedFileListRecordUpdater));
         }
 
         private ILogger<AWSFileUploaderImp> GetLogger()
@@ -57,6 +60,11 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
         private ILocalFileLister GetLocalFileLister()
         {
             return new Mock<ILocalFileLister>(MockBehavior.Strict).Object;
+        }
+
+        private ISavedFileListRecordUpdater GetSavedFileListRecordUpdater()
+        {
+            return new Mock<ISavedFileListRecordUpdater>(MockBehavior.Strict).Object;
         }
 
         private AWSConfigData GetConfigData()

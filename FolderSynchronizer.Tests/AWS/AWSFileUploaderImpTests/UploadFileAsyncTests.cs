@@ -49,6 +49,8 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
             SetUpRemotePath(localPath, remotePath);
 
             SetUpUploadAction(responseCode, localPath, remotePath);
+
+            SetUpSavedFileListRecordUpdater(localPath);
         }
 
         [Test]
@@ -60,6 +62,8 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
             SetUpBasicFileUploadTest(localPath, System.Net.HttpStatusCode.OK);
 
             Should.NotThrow(async () => await Uploader.UploadFileAsync(localPath));
+
+            VerifySavedFileListUpdatedWithPath(localPath);
         }
     }
 }

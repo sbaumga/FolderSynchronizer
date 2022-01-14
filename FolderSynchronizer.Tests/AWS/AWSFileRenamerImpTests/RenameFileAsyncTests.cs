@@ -30,26 +30,19 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileRenamerImpTests
             MockUploader.Setup(m => m.UploadFileAsync(NewPath)).Returns(Task.CompletedTask);
         }
 
+        private string NewPath = "Trash";
+
         private void SetUpPathIsFile(bool isFile)
         {
             MockPathManager.Setup(m => m.IsPathFile(NewPath)).Returns(isFile);
         }
 
-        private string NewPath = "Trash";
-
         private void SetUpSuccessfulDeletion()
         {
-            SetUpGetRemotePath();
-            MockDeleter.Setup(m => m.DeleteRemoteFileAsync(OldRemotePath)).Returns(Task.CompletedTask);
-        }
-
-        private void SetUpGetRemotePath()
-        {
-            MockPathManager.Setup(m => m.GetRemotePath(OldPath)).Returns(OldRemotePath);
+            MockDeleter.Setup(m => m.DeleteRemoteFileFromLocalFileAsync(OldPath)).Returns(Task.CompletedTask);
         }
 
         private string OldPath = "Garbage";
-        private string OldRemotePath = "Rubbish";
 
         private void VerifyUploadFileAttempted()
         {
@@ -58,7 +51,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileRenamerImpTests
 
         private void VerifyDeletionAttempted()
         {
-            MockDeleter.Verify(m => m.DeleteRemoteFileAsync(OldRemotePath), Times.Once);
+            MockDeleter.Verify(m => m.DeleteRemoteFileFromLocalFileAsync(OldPath), Times.Once);
         }
 
         [Test]
@@ -68,7 +61,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileRenamerImpTests
 
             SetUpDeletionFailure();
 
-            Should.Throw<Exception>(async () => await Renamer.RenameFileAsync(OldPath, NewPath));
+            Should.Throw<NotImplementedException>(async () => await Renamer.RenameFileAsync(OldPath, NewPath));
 
             VerifyUploadFileAttempted();
             VerifyDeletionAttempted();
@@ -76,8 +69,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileRenamerImpTests
 
         private void SetUpDeletionFailure()
         {
-            SetUpGetRemotePath();
-            MockDeleter.Setup(m => m.DeleteRemoteFileAsync(OldRemotePath)).Throws<Exception>();
+            MockDeleter.Setup(m => m.DeleteRemoteFileFromLocalFileAsync(OldPath)).Throws<NotImplementedException>();
         }
 
         [Test]
@@ -99,7 +91,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileRenamerImpTests
 
         private void VerifyDeletionNotAttempted()
         {
-            MockDeleter.Verify(m => m.DeleteRemoteFileAsync(OldRemotePath), Times.Never);
+            MockDeleter.Verify(m => m.DeleteRemoteFileFromLocalFileAsync(OldPath), Times.Never);
         }
 
         [Test]
@@ -132,7 +124,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileRenamerImpTests
 
             SetUpDeletionFailure();
 
-            Should.Throw<Exception>(async () => await Renamer.RenameFileAsync(OldPath, NewPath));
+            Should.Throw<NotImplementedException>(async () => await Renamer.RenameFileAsync(OldPath, NewPath));
 
             VerifyUploadFolderAttempted();
             VerifyDeletionAttempted();

@@ -28,7 +28,6 @@ namespace FolderSynchronizer.AWS.Implementations
         {
             if (PathManager.IsPathFile(localPath))
             {
-                // TODO: create a queue for failed requests?
                 await Uploader.UploadFileAsync(localPath);
             }
             else
@@ -39,9 +38,8 @@ namespace FolderSynchronizer.AWS.Implementations
 
         private async Task DeleteRenamedFile(string oldLocalPath)
         {
-            var oldRemotePath = PathManager.GetRemotePath(oldLocalPath);
             // TODO: better error reporting? What should be reported if we have the new file created, but can't delete the old file?
-            await Deleter.DeleteRemoteFileAsync(oldRemotePath);
+            await Deleter.DeleteRemoteFileFromLocalFileAsync(oldLocalPath);
         }
     }
 }

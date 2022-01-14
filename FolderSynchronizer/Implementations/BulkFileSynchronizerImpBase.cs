@@ -48,23 +48,33 @@ namespace FolderSynchronizer.Implementations
                     return;
 
                 case FileSynchronizationAction.Upload:
-                    if (file.SourceData == null)
-                    {
-                        throw new AWSFileSynchronizationException($"An {FileSynchronizationAction.Upload} action was returned with no source file to upload");
-                    }
-
-                    await Uploader.UploadFileAsync(file.SourceData.Path);
+                    await UploadFile(file.SourceData);
                     break;
 
                 case FileSynchronizationAction.Delete:
-                    if (file.DestinationData == null)
-                    {
-                        throw new AWSFileSynchronizationException($"An {FileSynchronizationAction.Delete} action was returned with no destination file to delete");
-                    }
-
-                    await Deleter.DeleteRemoteFileAsync(file.DestinationData.Path);
+                    await DeleteFile(file.DestinationData);
                     break;
             }
+        }
+
+        private async Task UploadFile(FileData file)
+        {
+            if (file == null)
+            {
+                throw new AWSFileSynchronizationException($"An {FileSynchronizationAction.Upload} action was returned with no source file to upload");
+            }
+
+            await Uploader.UploadFileAsync(file.Path);
+        }
+
+        protected virtual async Task DeleteFile(FileData file)
+        {
+            if (file == null)
+            {
+                throw new AWSFileSynchronizationException($"An {FileSynchronizationAction.Delete} action was returned with no destination file to delete");
+            }
+
+            await Deleter.DeleteRemoteFileAsync(file.Path);
         }
     }
 }
