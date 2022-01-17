@@ -30,14 +30,24 @@ namespace FolderSynchronizer.Implementations
 
         public async Task<IEnumerable<FileData>> LoadAsync()
         {
-            if (!File.Exists(FilePath))
-            {
+            var fileText = await ReadFromFile();
+            if (string.IsNullOrEmpty(fileText)) {
                 return Enumerable.Empty<FileData>();
             }
 
-            var fileText = await File.ReadAllTextAsync(FilePath);
             var data = Serializer.Deserialize<IEnumerable<FileData>>(fileText);
             return data;
+        }
+
+        private async Task<string> ReadFromFile()
+        {
+            if (!File.Exists(FilePath))
+            {
+                return string.Empty;
+            }
+
+            var fileText = await File.ReadAllTextAsync(FilePath);
+            return fileText;
         }
     }
 }
