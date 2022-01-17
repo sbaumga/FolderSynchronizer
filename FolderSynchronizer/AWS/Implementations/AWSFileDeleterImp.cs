@@ -11,6 +11,7 @@ namespace FolderSynchronizer.AWS.Implementations
         private IAWSFileLister FileLister { get; }
         private IAWSActionTaker ActionTaker { get; }
         private ISavedFileListRecordDeleter SavedFileListRecordDeleter { get; }
+        private FolderSynchronizer.Abstractions.ILogger Logger { get; }
 
         private string BucketName { get; }
 
@@ -19,12 +20,14 @@ namespace FolderSynchronizer.AWS.Implementations
             IAWSFileLister fileLister,
             IAWSActionTaker actionTaker,
             AWSConfigData configData,
-            ISavedFileListRecordDeleter savedFileListRecordDeleter)
+            ISavedFileListRecordDeleter savedFileListRecordDeleter,
+            FolderSynchronizer.Abstractions.ILogger logger)
         {
             PathManager = pathManager ?? throw new ArgumentNullException(nameof(pathManager));
             FileLister = fileLister ?? throw new ArgumentNullException(nameof(fileLister));
             ActionTaker = actionTaker ?? throw new ArgumentNullException(nameof(actionTaker));
             SavedFileListRecordDeleter = savedFileListRecordDeleter ?? throw new ArgumentNullException(nameof(savedFileListRecordDeleter));
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             if (configData == null)
             {
@@ -61,11 +64,25 @@ namespace FolderSynchronizer.AWS.Implementations
                 Key = remotePath,
             };
 
+            LogDeleteFileMessage(remotePath);
+
             var response = ActionTaker.DoDeleteAction(deleteRequest);
             if (!response.HttpStatusCode.HasFlag(System.Net.HttpStatusCode.OK))
             {
                 throw new Exception(response.ToString());
             }
+
+            LogDeleteFileCompleteMessage(remotePath);
+        }
+
+        private void LogDeleteFileMessage(string remotePath)
+        {
+            Logger.LogInformation($"Deleting file {remotePath}");
+        }
+
+        private void LogDeleteFileCompleteMessage(string remotePath)
+        {
+            Logger.LogInformation($"File {remotePath} successfully deleted");
         }
 
         private async Task DeleteFolder(string remotePath)

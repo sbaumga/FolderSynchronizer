@@ -18,7 +18,8 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
             ActionTaker,
             FileLister,
             ConfigData,
-            SavedFileListRecordDeleter
+            SavedFileListRecordDeleter,
+            Logger
         }
 
         [Test]
@@ -27,16 +28,18 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
         [TestCase(NullConstructorArg.FileLister)]
         [TestCase(NullConstructorArg.ConfigData)]
         [TestCase(NullConstructorArg.SavedFileListRecordDeleter)]
+        [TestCase(NullConstructorArg.Logger)]
         public void ArgumentTest(NullConstructorArg nullArg)
         {
-            IAWSPathManager pathManger = nullArg == NullConstructorArg.PathManger ? null : GetPathManger();
-            IAWSActionTaker actionTaker = nullArg == NullConstructorArg.ActionTaker ? null : GetActionTaker();
-            IAWSFileLister fileLister = nullArg == NullConstructorArg.FileLister ? null : GetAWSFileLister();
-            ISavedFileListRecordDeleter savedFileListRecordDeleter = nullArg == NullConstructorArg.SavedFileListRecordDeleter ? null : GetSavedFileListRecordDeleter();
+            var pathManger = nullArg == NullConstructorArg.PathManger ? null : GetPathManger();
+            var actionTaker = nullArg == NullConstructorArg.ActionTaker ? null : GetActionTaker();
+            var fileLister = nullArg == NullConstructorArg.FileLister ? null : GetAWSFileLister();
+            var savedFileListRecordDeleter = nullArg == NullConstructorArg.SavedFileListRecordDeleter ? null : GetSavedFileListRecordDeleter();
+            var logger = nullArg == NullConstructorArg.Logger ? null : GetLogger();
 
-            AWSConfigData configData = nullArg == NullConstructorArg.ConfigData ? null : GetConfigData();
+            var configData = nullArg == NullConstructorArg.ConfigData ? null : GetConfigData();
 
-            Should.Throw<ArgumentNullException>(() => new AWSFileDeleterImp(pathManger, fileLister, actionTaker, configData, savedFileListRecordDeleter));
+            Should.Throw<ArgumentNullException>(() => new AWSFileDeleterImp(pathManger, fileLister, actionTaker, configData, savedFileListRecordDeleter, logger));
         }
 
         private IAWSPathManager GetPathManger()
@@ -57,6 +60,11 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
         private ISavedFileListRecordDeleter GetSavedFileListRecordDeleter()
         {
             return new Mock<ISavedFileListRecordDeleter>(MockBehavior.Strict).Object;
+        }
+
+        private ILogger GetLogger()
+        {
+            return new Mock<ILogger>(MockBehavior.Strict).Object;
         }
 
         private AWSConfigData GetConfigData()

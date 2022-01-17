@@ -23,6 +23,8 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
             Should.Throw<Exception>(() => DeletionFunction(DeletionPath));
 
             VerifyDeletionActionTaken(DeletionPath, Times.Once);
+
+            VerifyFailedDeletionLogs(DeletionPath);
         }
 
         protected abstract void DeletionFunction(string path);
@@ -30,6 +32,27 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
         private void VerifyDeletionActionTaken(string fileKey, Func<Times> times)
         {
             MockActionTaker.Verify(a => a.DoDeleteAction(It.Is<DeleteObjectRequest>(r => r.Key == fileKey)), times);
+        }
+
+        private void VerifyFailedDeletionLogs(string path)
+        {
+            VerifyDeletionStartLogged(path);
+            VerifyDeletionEndNotLogged(path);
+        }
+
+        private void VerifyDeletionStartLogged(string path)
+        {
+            MockLogger.Verify(l => l.LogInformation(It.Is<string>(s => s == $"Deleting file {path}")), Times.Once);
+        }
+
+        private string EndDeleteLogMessage(string path)
+        {
+            return $"File {path} successfully deleted";
+        }
+
+        private void VerifyDeletionEndNotLogged(string path)
+        {
+            MockLogger.Verify(l => l.LogInformation(It.Is<string>(s => s == EndDeleteLogMessage(path))), Times.Never);
         }
 
         [Test]
@@ -41,6 +64,18 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
             DeletionFunction(DeletionPath);
 
             VerifyDeletionActionTaken(DeletionPath, Times.Once);
+            VerifySuccessfulDeletionLogs(DeletionPath);
+        }
+
+        private void VerifySuccessfulDeletionLogs(string path)
+        {
+            VerifyDeletionStartLogged(path);
+            VerifyDeletionEndLogged(path);
+        }
+
+        private void VerifyDeletionEndLogged(string path)
+        {
+            MockLogger.Verify(l => l.LogInformation(It.Is<string>(s => s == EndDeleteLogMessage(path))), Times.Once);
         }
 
         [Test]
@@ -52,6 +87,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
             DeletionFunction(DeletionPath);
 
             VerifyDeletionActionTaken(DeletionPath, Times.Never);
+            MockLogger.Verify(l => l.LogInformation(It.IsAny<string>()), Times.Never);
         }
 
         protected abstract string FolderPath { get; }
@@ -69,6 +105,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
             DeletionFunction(DeletionPath);
 
             VerifyDeletionActionTaken(SingleFilePath, Times.Once);
+            VerifySuccessfulDeletionLogs(SingleFilePath);
         }
 
         protected string SingleFilePath => "Rubbish";
@@ -89,6 +126,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
             Should.Throw<Exception>(() => DeletionFunction(DeletionPath));
 
             VerifyDeletionActionTaken(SingleFilePath, Times.Once);
+            VerifyFailedDeletionLogs(SingleFilePath);
         }
 
         [Test]
@@ -99,6 +137,10 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
             Should.NotThrow(() => DeletionFunction(DeletionPath));
 
             VerifyMultipleFileFolderDeletesAttempted();
+            foreach(var path in MultipleFileFolderFilePaths)
+            {
+                VerifySuccessfulDeletionLogs(path);
+            }
         }
 
         protected string[] MultipleFileFolderFilePaths = new[] { "Rubbish", "Crud", "Waste" };
@@ -136,6 +178,10 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
             Should.Throw<Exception>(() => DeletionFunction(DeletionPath));
 
             VerifyMultipleFileFolderDeletesAttempted();
+            foreach (var path in MultipleFileFolderFilePaths)
+            {
+                VerifyFailedDeletionLogs(path);
+            }
         }
 
         [Test]
@@ -147,6 +193,16 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
             Should.Throw<Exception>(() => DeletionFunction(DeletionPath));
 
             VerifyMultipleFileFolderDeletesAttempted();
+
+            foreach (var path in MixedSuccessTest_FailurePaths)
+            {
+                VerifyFailedDeletionLogs(path);
+            }
+
+            foreach (var path in MixedSuccessTest_SuccessPaths)
+            {
+                VerifySuccessfulDeletionLogs(path);
+            }
         }
 
         protected IEnumerable<string> MixedSuccessTest_FailurePaths => MultipleFileFolderFilePaths.Where((p, i) => i % 2 != 0);

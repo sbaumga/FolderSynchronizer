@@ -16,6 +16,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
         protected Mock<IAWSFileLister> MockFileLister { get; set; }
         protected Mock<IAWSActionTaker> MockActionTaker { get; set; }
         protected Mock<ISavedFileListRecordDeleter> MockSavedFileListRecordDeleter { get; set; }
+        protected Mock<ILogger> MockLogger { get; set; }
 
         protected string BucketName => "TestBucket";
 
@@ -32,12 +33,15 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
 
             MockSavedFileListRecordDeleter = new Mock<ISavedFileListRecordDeleter>(MockBehavior.Strict);
 
+            MockLogger = new Mock<ILogger>(MockBehavior.Strict);
+            MockLogger.Setup(l => l.LogInformation(It.IsAny<string>()));
+
             var configData = new AWSConfigData
             {
                 BucketName = BucketName,
             };
 
-            Deleter = new AWSFileDeleterImp(MockPathManager.Object, MockFileLister.Object, MockActionTaker.Object, configData, MockSavedFileListRecordDeleter.Object);
+            Deleter = new AWSFileDeleterImp(MockPathManager.Object, MockFileLister.Object, MockActionTaker.Object, configData, MockSavedFileListRecordDeleter.Object, MockLogger.Object);
         }
 
         protected void SetUpGetRemotePath(string localPath, string remotePath)
