@@ -62,9 +62,9 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
             return new Mock<ISavedFileListRecordDeleter>(MockBehavior.Strict).Object;
         }
 
-        private ILogger GetLogger()
+        private ILogger<AWSFileDeleterImp> GetLogger()
         {
-            return new Mock<ILogger>(MockBehavior.Strict).Object;
+            return new Mock<ILogger<AWSFileDeleterImp>>(MockBehavior.Strict).Object;
         }
 
         private AWSConfigData GetConfigData()

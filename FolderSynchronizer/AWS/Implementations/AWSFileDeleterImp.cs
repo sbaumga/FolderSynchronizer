@@ -21,7 +21,7 @@ namespace FolderSynchronizer.AWS.Implementations
             IAWSActionTaker actionTaker,
             AWSConfigData configData,
             ISavedFileListRecordDeleter savedFileListRecordDeleter,
-            FolderSynchronizer.Abstractions.ILogger logger)
+            FolderSynchronizer.Abstractions.ILogger<AWSFileDeleterImp> logger)
         {
             PathManager = pathManager ?? throw new ArgumentNullException(nameof(pathManager));
             FileLister = fileLister ?? throw new ArgumentNullException(nameof(fileLister));
