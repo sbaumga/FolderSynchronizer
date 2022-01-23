@@ -1,6 +1,8 @@
 ﻿using FolderSynchronizer.Abstractions;
 using FolderSynchronizer.AWS.Abstractions;
+using FolderSynchronizer.AWS.Exceptions;
 using FolderSynchronizer.Data;
+using FolderSynchronizer.Enums;
 
 namespace FolderSynchronizer.Implementations
 {
@@ -17,6 +19,11 @@ namespace FolderSynchronizer.Implementations
 
         protected override async Task DeleteFile(FileData file)
         {
+            if (file == null)
+            {
+                throw new AWSFileSynchronizationException($"An {FileSynchronizationAction.Delete} action was returned with no destination file to delete");
+            }
+
             var localPath = file.Path;
             file.Path = AWSPathManager.GetRemotePath(localPath);
 

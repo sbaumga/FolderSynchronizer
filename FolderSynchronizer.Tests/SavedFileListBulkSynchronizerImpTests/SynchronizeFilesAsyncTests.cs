@@ -13,7 +13,9 @@ namespace FolderSynchronizer.Tests.SavedFileListBulkSynchronizerImpTests
         protected override SavedFileListBulkSynchronizerImp CreateBulkSynchronizer(ISavedFileListSyncChecker syncChecker, IAWSFileUploader fileUploader, IAWSFileDeleter fileDeleter, ISynchronizationActionDecider synchronizationActionDecider)
         {
             MockSavedFileListRecordDeleter = new Mock<ISavedFileListRecordDeleter>(MockBehavior.Strict);
+
             MockPathManager = new Mock<IAWSPathManager>(MockBehavior.Strict);
+            MockPathManager.Setup(p => p.GetRemotePath(It.IsAny<string>())).Returns<string>(s => s);
 
             return new SavedFileListBulkSynchronizerImp(syncChecker, fileUploader, fileDeleter, synchronizationActionDecider, MockSavedFileListRecordDeleter.Object, MockPathManager.Object);
         }
