@@ -3,6 +3,7 @@ using FolderSynchronizer.Abstractions;
 using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Data;
 using FolderSynchronizer.AWS.Implementations;
+using FolderSynchronizer.Data;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
@@ -23,6 +24,8 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
 
         protected string BucketName { get; set; }
 
+        protected string MachineName { get; set; }
+
         protected AWSFileUploaderImp Uploader { get; set; }
 
         [SetUp]
@@ -40,9 +43,12 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
             MockSavedFileListRecordUpdater = new Mock<ISavedFileListRecordUpdater>(MockBehavior.Strict);
 
             BucketName = "TestBucket";
-            var configData = new AWSConfigData { BucketName = BucketName };
+            var awsConfigData = new AWSConfigData { BucketName = BucketName };
 
-            Uploader = new AWSFileUploaderImp(MockLogger.Object, MockPathManager.Object, MockActionTaker.Object, MockLocalFileLister.Object, configData, MockSavedFileListRecordUpdater.Object);
+            MachineName = "TestMachine";
+            var localConfigData = new LocalConfigData { MachineName = MachineName };
+
+            Uploader = new AWSFileUploaderImp(MockLogger.Object, MockPathManager.Object, MockActionTaker.Object, MockLocalFileLister.Object, awsConfigData, localConfigData, MockSavedFileListRecordUpdater.Object);
         }
 
         protected void SetUpIsPathFile(bool returnValue, string path)
@@ -67,7 +73,9 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
                 HttpStatusCode = statusCode,
             };
 
-            MockActionTaker.Setup(t => t.DoUploadAction(It.Is<PutObjectRequest>(r => r.FilePath == expectedLocalPath))).Returns(response).Callback<PutObjectRequest>(request =>
+            MockActionTaker.Setup(t => t.DoUploadAction(
+                It.Is<PutObjectRequest>(r => r.FilePath == expectedLocalPath && r.Metadata[nameof(LocalConfigData.MachineName)] == MachineName)))
+                .Returns(response).Callback<PutObjectRequest>(request =>
             {
                 request.FilePath.ShouldBe(expectedLocalPath);
                 request.Key.ShouldBe(expectedRemotePath);

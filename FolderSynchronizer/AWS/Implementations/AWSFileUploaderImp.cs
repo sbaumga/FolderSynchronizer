@@ -3,6 +3,7 @@ using FolderSynchronizer.Abstractions;
 using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Data;
 using FolderSynchronizer.AWS.Exceptions;
+using FolderSynchronizer.Data;
 
 namespace FolderSynchronizer.AWS.Implementations
 {
@@ -16,13 +17,15 @@ namespace FolderSynchronizer.AWS.Implementations
         private ISavedFileListRecordUpdater SavedFileListRecordUpdater { get; }
 
         private string BucketName { get; }
+        private string MachineName { get; }
 
         public AWSFileUploaderImp(
             FolderSynchronizer.Abstractions.ILogger<AWSFileUploaderImp> logger,
             IAWSPathManager pathManager,
             IAWSActionTaker actionTaker,
             ILocalFileLister localFileLister,
-            AWSConfigData configData,
+            AWSConfigData awsConfigData,
+            LocalConfigData localConfigData,
             ISavedFileListRecordUpdater savedFileListRecordUpdater)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -32,11 +35,8 @@ namespace FolderSynchronizer.AWS.Implementations
             LocalFileLister = localFileLister ?? throw new ArgumentNullException(nameof(localFileLister));
             SavedFileListRecordUpdater = savedFileListRecordUpdater ?? throw new ArgumentNullException(nameof(savedFileListRecordUpdater));
 
-            if (configData == null)
-            {
-                throw new ArgumentNullException(nameof(configData));
-            }
-            BucketName = configData.BucketName;
+            BucketName = awsConfigData?.BucketName ?? throw new ArgumentNullException(nameof(awsConfigData)); ;
+            MachineName = localConfigData?.MachineName ?? throw new ArgumentNullException(nameof(localConfigData));
         }
 
         public async Task UploadFileAsync(string localPath)
@@ -55,15 +55,7 @@ namespace FolderSynchronizer.AWS.Implementations
 
             LogUploadFileMessage(localPath, remotePath);
 
-            var mimeType = GetMimeType(localPath);
-
-            var putRequest = new PutObjectRequest
-            {
-                BucketName = BucketName,
-                Key = remotePath,
-                FilePath = localPath,
-                ContentType = mimeType
-            };
+            var putRequest = GetPutRequest(localPath, remotePath);
 
             var response = ActionTaker.DoUploadAction(putRequest);
             if (!response.HttpStatusCode.HasFlag(System.Net.HttpStatusCode.OK))
@@ -79,6 +71,22 @@ namespace FolderSynchronizer.AWS.Implementations
         private void LogUploadFileMessage(string localPath, string remotePath)
         {
             Logger.LogInformation($"Uploading file {localPath} to {remotePath}");
+        }
+
+        private PutObjectRequest GetPutRequest(string localPath, string remotePath)
+        {
+            var mimeType = GetMimeType(localPath);
+
+            var putRequest = new PutObjectRequest
+            {
+                BucketName = BucketName,
+                Key = remotePath,
+                FilePath = localPath,
+                ContentType = mimeType,
+            };
+            putRequest.Metadata.Add(nameof(LocalConfigData.MachineName), MachineName);
+
+            return putRequest;
         }
 
         private string GetMimeType(string filePath)
