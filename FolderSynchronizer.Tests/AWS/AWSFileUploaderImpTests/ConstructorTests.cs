@@ -2,7 +2,6 @@
 using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Data;
 using FolderSynchronizer.AWS.Implementations;
-using FolderSynchronizer.Data;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
@@ -19,8 +18,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
             PathManger,
             ActionTaker,
             FileLister,
-            AwsConfigData,
-            LocalConfigData,
+            ConfigData,
             SavedFileListRecordUpdater
         }
 
@@ -29,8 +27,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
         [TestCase(NullConstructorArg.PathManger)]
         [TestCase(NullConstructorArg.ActionTaker)]
         [TestCase(NullConstructorArg.FileLister)]
-        [TestCase(NullConstructorArg.AwsConfigData)]
-        [TestCase(NullConstructorArg.LocalConfigData)]
+        [TestCase(NullConstructorArg.ConfigData)]
         [TestCase(NullConstructorArg.SavedFileListRecordUpdater)]
         public void NullArgumentTest(NullConstructorArg nullArg)
         {
@@ -40,10 +37,9 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
             ILocalFileLister fileLister = nullArg == NullConstructorArg.FileLister ? null : GetLocalFileLister();
             ISavedFileListRecordUpdater savedFileListRecordUpdater = nullArg == NullConstructorArg.SavedFileListRecordUpdater ? null : GetSavedFileListRecordUpdater();
 
-            AWSConfigData awsConfigData = nullArg == NullConstructorArg.AwsConfigData ? null : GetAwsConfigData();
-            LocalConfigData localConfigData = nullArg == NullConstructorArg.LocalConfigData ? null : GetLocalConfigData();
+            AWSConfigData configData = nullArg == NullConstructorArg.ConfigData ? null : GetConfigData();
 
-            Should.Throw<ArgumentNullException>(() => new AWSFileUploaderImp(logger, pathManger, actionTaker, fileLister, awsConfigData, localConfigData, savedFileListRecordUpdater));
+            Should.Throw<ArgumentNullException>(() => new AWSFileUploaderImp(logger, pathManger, actionTaker, fileLister, configData, savedFileListRecordUpdater));
         }
 
         private ILogger<AWSFileUploaderImp> GetLogger()
@@ -71,14 +67,9 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
             return new Mock<ISavedFileListRecordUpdater>(MockBehavior.Strict).Object;
         }
 
-        private AWSConfigData GetAwsConfigData()
+        private AWSConfigData GetConfigData()
         {
             return new AWSConfigData { BucketName = "TestBucket" };
-        }
-
-        private LocalConfigData GetLocalConfigData()
-        {
-            return new LocalConfigData { MachineName = "TestMachine" };
         }
     }
 }
