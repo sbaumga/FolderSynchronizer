@@ -31,7 +31,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
 
         private void VerifyDeletionActionTaken(string fileKey, Func<Times> times)
         {
-            MockActionTaker.Verify(a => a.DoDeleteAction(It.Is<DeleteObjectRequest>(r => r.Key == fileKey)), times);
+            MockActionTaker.Verify(a => a.DoDeleteActionAsync(It.Is<DeleteObjectRequest>(r => r.Key == fileKey)), times);
         }
 
         private void VerifyFailedDeletionLogs(string path)

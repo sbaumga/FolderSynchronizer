@@ -6,6 +6,7 @@ using FolderSynchronizer.AWS.Implementations;
 using Moq;
 using NUnit.Framework;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
 {
@@ -60,7 +61,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileDeleterImpTests
             {
                 HttpStatusCode = responseCode
             };
-            MockActionTaker.Setup(a => a.DoDeleteAction(It.Is<DeleteObjectRequest>(r => r.Key == fileKey))).Returns(response);
+            MockActionTaker.Setup(a => a.DoDeleteActionAsync(It.Is<DeleteObjectRequest>(r => r.Key == fileKey))).Returns(Task.FromResult(response));
         }
     }
 }

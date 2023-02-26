@@ -15,34 +15,33 @@ namespace FolderSynchronizer.AWS.Implementations
             ClientCreator = clientCreator ?? throw new ArgumentNullException(nameof(clientCreator));
         }
 
-        [Obsolete]
-        public TResponse DoS3Action<TResponse>(Func<IAmazonS3, TResponse> s3Action)
+        public async Task<ListObjectsV2Response> DoListActionAsync(ListObjectsV2Request request)
         {
-            return DoS3ActionInternal(s3Action);
+            return await DoS3Action(client => client.ListObjectsV2Async(request));
         }
 
-        private TResponse DoS3ActionInternal<TResponse>(Func<IAmazonS3, TResponse> s3Action)
+        public async Task<PutObjectResponse> DoUploadActionAsync(PutObjectRequest request)
+        {
+            return await DoS3Action(client => client.PutObjectAsync(request));
+        }
+
+        public async Task<DeleteObjectResponse> DoDeleteActionAsync(DeleteObjectRequest request)
+        {
+            return await DoS3Action(client => client.DeleteObjectAsync(request));
+        }
+
+        private async Task<TResponse> DoS3Action<TResponse>(Func<IAmazonS3, Task<TResponse>> s3Action)
         {
             try
             {
                 var client = ClientCreator.GetS3Client();
-                var response = s3Action(client);
+                var response = await s3Action(client);
                 return response;
             }
             catch (AmazonS3Exception amazonS3Exception)
             {
                 throw GetUnderstandableExceptionFromAmazonS3Exception(amazonS3Exception);
             }
-        }
-
-        public PutObjectResponse DoUploadAction(PutObjectRequest request)
-        {
-            return DoS3ActionInternal((client) => client.PutObjectAsync(request).Result);
-        }
-
-        public DeleteObjectResponse DoDeleteAction(DeleteObjectRequest request)
-        {
-            return DoS3ActionInternal((client) => client.DeleteObjectAsync(request).Result);
         }
 
         private Exception GetUnderstandableExceptionFromAmazonS3Exception(AmazonS3Exception exception)

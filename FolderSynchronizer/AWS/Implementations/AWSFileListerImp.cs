@@ -43,7 +43,7 @@ namespace FolderSynchronizer.AWS.Implementations
                 BucketName = BucketName
             };
 
-            var response = await ActionTaker.DoS3Action(async (client) => await client.ListObjectsV2Async(request));
+            var response = await ActionTaker.DoListActionAsync(request);
             return response.S3Objects;
         }
 

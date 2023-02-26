@@ -1,5 +1,4 @@
-﻿using Amazon.S3;
-using Amazon.S3.Model;
+﻿using Amazon.S3.Model;
 using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Data;
 using FolderSynchronizer.AWS.Implementations;
@@ -35,7 +34,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileListerImpTests
                 S3Objects = new List<S3Object>(s3Objects)
             };
 
-            MockActionTaker.Setup(s => s.DoS3Action(It.IsAny<Func<IAmazonS3, Task<ListObjectsV2Response>>>())).Returns(Task.FromResult(fakeResponse));
+            MockActionTaker.Setup(s => s.DoListActionAsync(It.IsAny<ListObjectsV2Request>())).Returns(Task.FromResult(fakeResponse));
         }
 
         protected S3Object CreateS3Object(string key, DateTime? lastModifiedDate = null)

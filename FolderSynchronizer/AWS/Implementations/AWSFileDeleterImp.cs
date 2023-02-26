@@ -66,7 +66,7 @@ namespace FolderSynchronizer.AWS.Implementations
 
             LogDeleteFileMessage(remotePath);
 
-            var response = ActionTaker.DoDeleteAction(deleteRequest);
+            var response = await ActionTaker.DoDeleteActionAsync(deleteRequest);
             if (!response.HttpStatusCode.HasFlag(System.Net.HttpStatusCode.OK))
             {
                 throw new Exception(response.ToString());

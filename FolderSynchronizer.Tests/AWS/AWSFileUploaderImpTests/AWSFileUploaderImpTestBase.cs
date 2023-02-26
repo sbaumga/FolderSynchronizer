@@ -67,7 +67,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSFileUploaderImpTests
                 HttpStatusCode = statusCode,
             };
 
-            MockActionTaker.Setup(t => t.DoUploadAction(It.Is<PutObjectRequest>(r => r.FilePath == expectedLocalPath))).Returns(response).Callback<PutObjectRequest>(request =>
+            MockActionTaker.Setup(t => t.DoUploadActionAsync(It.Is<PutObjectRequest>(r => r.FilePath == expectedLocalPath))).Returns(Task.FromResult(response)).Callback<PutObjectRequest>(request =>
             {
                 request.FilePath.ShouldBe(expectedLocalPath);
                 request.Key.ShouldBe(expectedRemotePath);
