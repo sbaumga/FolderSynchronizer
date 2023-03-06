@@ -8,15 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.Core" Version="3.7.4" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.4.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.105.8" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.103.15" />
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.100.79" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.0" />
     <PackageReference Include="MimeTypeMapOfficial" Version="1.0.17" />
-    <PackageReference Include="Shouldly" Version="4.0.3" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
+    <PackageReference Include="Shouldly" Version="4.1.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>

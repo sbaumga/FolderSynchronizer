@@ -1,10 +1,10 @@
-﻿using Amazon.S3;
+﻿using Amazon.Runtime;
 
 namespace FolderSynchronizer.Extensions
 {
-    public static class AmazonS3ExceptionExtensions
+    public static class AmazonServiceExceptionExtensions
     {
-        public static bool IsCredentialException(this AmazonS3Exception exception)
+        public static bool IsCredentialException(this AmazonServiceException exception)
         {
             return exception.ErrorCode != null &&
                     (exception.ErrorCode.Equals("InvalidAccessKeyId")

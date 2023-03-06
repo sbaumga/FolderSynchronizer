@@ -1,6 +1,7 @@
 ﻿using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
+using Amazon.SQS;
 using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Data;
 
@@ -24,6 +25,11 @@ namespace FolderSynchronizer.AWS.Implementations
         {
             var client = new AmazonS3Client(AWSCredentials, RegionEndpoint.CACentral1);
             return client;
+        }
+
+        public IAmazonSQS GetSQSClient()
+        {
+            return new AmazonSQSClient(AWSCredentials, RegionEndpoint.CACentral1);
         }
     }
 }

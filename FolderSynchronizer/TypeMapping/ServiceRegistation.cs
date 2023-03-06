@@ -1,4 +1,5 @@
 ﻿using FolderSynchronizer.Abstractions;
+using FolderSynchronizer.AWS;
 using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Implementations;
 using FolderSynchronizer.Implementations;
@@ -19,9 +20,12 @@ namespace FolderSynchronizer.TypeMapping
 
             builder.AddTransient<ILocalFileLister, LocalFileListerImp>();
             builder.AddTransient<ISerializer, JsonSerializerImp>();
-            
+            builder.AddTransient<IJsonSerializer, JsonSerializerImp>();
+
             builder.AddTransient<ISynchronizationActionDecider, SynchronizationActionDeciderImp>();
             builder.AddTransient<IFileDataCreator, FileDataCreatorImp>();
+
+            builder.AddTransient<ILocalFileDeleter, LocalFileDeleterImp>();
 
             RegisterSavedFileListServices(builder);
         }
@@ -41,13 +45,28 @@ namespace FolderSynchronizer.TypeMapping
             builder.AddTransient<IAWSBulkFileSynchronizer, AWSBulkFileSynchronizerImp>();
             builder.AddTransient<IAWSFileRenamer, AWSFileRenamerImp>();
 
-            builder.AddTransient<IAWSFileLister, AWSFileListerImp>();
-            builder.AddTransient<IAWSFileUploader, AWSFileUploaderImp>();
-            builder.AddTransient<IAWSFileDeleter, AWSFileDeleterImp>();
-
             builder.AddTransient<IAWSClientCreator, AWSClientCreatorImp>();
             builder.AddTransient<IAWSPathManager, AWSPathManagerImp>();
             builder.AddTransient<IAWSActionTaker, AWSActionTakerImp>();
+
+            RegisterS3Things(builder);
+            RegisterSQSThings(builder);
+        }
+
+        private static void RegisterS3Things(IServiceCollection builder)
+        {
+            builder.AddTransient<IAWSFileLister, AWSFileListerImp>();
+            builder.AddTransient<IAWSFileUploader, AWSFileUploaderImp>();
+            builder.AddTransient<IAWSFileDeleter, AWSFileDeleterImp>();
+            builder.AddTransient<IAWSFileDownloader, AWSFileDownloaderImp>();
+        }
+
+        private static void RegisterSQSThings(IServiceCollection builder)
+        {
+            builder.AddTransient<IAWSSQSMessageDeleter, AWSSQSMessageDeleterImp>();
+            builder.AddTransient<IAWSSQSAutomatedS3MessageDeserializer, AWSSQSAutomatedS3MessageDeserializerImp>();
+            builder.AddTransient<IAWSSQSMessageConsumer, AWSSQSMessageConsumerImp>();
+            builder.AddTransient<IAWSSQSPoller, AWSSQSPollerImp>();
         }
     }
 }

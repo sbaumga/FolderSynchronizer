@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace FolderSynchronizer.Implementations
 {
-    public class JsonSerializerImp : ISerializer
+    public class JsonSerializerImp : IJsonSerializer
     {
         public string Serialize<T>(T data)
         {
@@ -13,7 +13,12 @@ namespace FolderSynchronizer.Implementations
 
         public T Deserialize<T>(string data)
         {
-            var result = JsonSerializer.Deserialize<T>(data);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            var result = JsonSerializer.Deserialize<T>(data, options);
             return result;
         }
     }
