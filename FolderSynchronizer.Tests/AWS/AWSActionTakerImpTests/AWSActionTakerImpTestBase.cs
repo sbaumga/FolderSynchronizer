@@ -1,4 +1,4 @@
-﻿using Amazon.S3;
+﻿using Amazon.Runtime;
 using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Exceptions;
 using FolderSynchronizer.AWS.Implementations;
@@ -12,40 +12,35 @@ using System.Threading.Tasks;
 namespace FolderSynchronizer.Tests.AWS.AWSActionTakerImpTests
 {
     [TestFixture]
-    public abstract class AWSActionTakerImpTestBase<TRequest, TResponse>
+    public abstract class AWSActionTakerImpTestBase<TAmazon, TException, TRequest, TResponse>
+        where TAmazon : class, IAmazonService
+        where TException : AmazonServiceException
         where TRequest : class, new()
         where TResponse : class, new()
     {
-        protected Mock<IAmazonS3> MockAmazonS3 { get; set; }
+        protected Mock<TAmazon> MockAmazon { get; set; }
         protected Mock<IAWSClientCreator> MockClientCreator { get; set; }
         protected AWSActionTakerImp ActionTaker { get; set; }
 
         [SetUp]
         public void SetUp()
         {
-            MockAmazonS3 = new Mock<IAmazonS3>(MockBehavior.Strict);
+            MockAmazon = new Mock<TAmazon>(MockBehavior.Strict);
 
             MockClientCreator = new Mock<IAWSClientCreator>(MockBehavior.Strict);
-            MockClientCreator.Setup(c => c.GetS3Client()).Returns(MockAmazonS3.Object);
+            SetupClientCreator(MockAmazon);
 
             ActionTaker = new AWSActionTakerImp(MockClientCreator.Object);
         }
 
-        protected AmazonS3Exception CreateS3Exception(string? errorCode)
-        {
-            var exception = new AmazonS3Exception("TestException")
-            {
-                ErrorCode = errorCode
-            };
-            return exception;
-        }
+        protected abstract void SetupClientCreator(Mock<TAmazon> mockAmazon);
 
         [Test]
         public async Task SuccessTest()
         {
             var request = new TRequest();
             var response = new TResponse();
-            MockAmazonS3.Setup(ClientFuncSetup(request)).Returns(Task.FromResult(response));
+            MockAmazon.Setup(ClientFuncSetup(request)).Returns(Task.FromResult(response));
 
             var result = await DoAction(request);
 
@@ -57,10 +52,10 @@ namespace FolderSynchronizer.Tests.AWS.AWSActionTakerImpTests
         [TestCase("InvalidSecurity")]
         public void CredentialExceptionThrown(string errorCode)
         {
-            var fakeS3Exception = CreateS3Exception(errorCode);
+            var fakeS3Exception = CreateException(errorCode);
 
             var request = new TRequest();
-            MockAmazonS3.Setup(ClientFuncSetup(request)).Throws(fakeS3Exception);
+            MockAmazon.Setup(ClientFuncSetup(request)).Throws(fakeS3Exception);
 
             CheckThrowsException(request, "Check the provided AWS Credentials.", fakeS3Exception);
         }
@@ -70,13 +65,22 @@ namespace FolderSynchronizer.Tests.AWS.AWSActionTakerImpTests
         [TestCase("UnknownErrorCode")]
         public void UnknownExceptionThrown(string? errorCode)
         {
-            var fakeS3Exception = CreateS3Exception(errorCode);
+            var fakeS3Exception = CreateException(errorCode);
 
             var request = new TRequest();
-            MockAmazonS3.Setup(ClientFuncSetup(request)).Throws(fakeS3Exception);
+            MockAmazon.Setup(ClientFuncSetup(request)).Throws(fakeS3Exception);
 
             CheckThrowsException(request, "Error occurred: " + fakeS3Exception.Message, fakeS3Exception);
         }
+
+        protected TException CreateException(string? errorCode)
+        {
+            var exception = CreateException();
+            exception.ErrorCode = errorCode;
+            return exception;
+        }
+
+        protected abstract TException CreateException();
 
         private void CheckThrowsException(TRequest request, string exceptionMessage, Exception innerException)
         {
@@ -86,7 +90,7 @@ namespace FolderSynchronizer.Tests.AWS.AWSActionTakerImpTests
                 ex => ex.InnerException.ShouldBe(innerException));
         }
 
-        protected abstract Expression<Func<IAmazonS3, Task<TResponse>>> ClientFuncSetup(TRequest request);
+        protected abstract Expression<Func<TAmazon, Task<TResponse>>> ClientFuncSetup(TRequest request);
 
         protected abstract Task<TResponse> DoAction(TRequest request);
     }

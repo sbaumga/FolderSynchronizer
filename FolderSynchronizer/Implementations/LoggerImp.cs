@@ -13,5 +13,10 @@
         {
             Logger.LogInformation(message);
         }
+
+        public void LogError(string error, Exception ex)
+        {
+            Logger.LogError(ex, error);
+        }
     }
 }

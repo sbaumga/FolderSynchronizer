@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FolderSynchronizer.Tests.AWS.AWSActionTakerImpTests
 {
-    public class DoListActionAsyncTests : AWSActionTakerImpTestBase<ListObjectsV2Request, ListObjectsV2Response>
+    public class DoListActionAsyncTests : AWSS3ActionTakerImpTestBase<ListObjectsV2Request, ListObjectsV2Response>
     {
         protected override Expression<Func<IAmazonS3, Task<ListObjectsV2Response>>> ClientFuncSetup(ListObjectsV2Request request)
             => s => s.ListObjectsV2Async(request, It.IsAny<CancellationToken>());

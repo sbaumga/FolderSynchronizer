@@ -67,6 +67,7 @@ namespace FolderSynchronizer.TypeMapping
             builder.AddTransient<IAWSSQSAutomatedS3MessageDeserializer, AWSSQSAutomatedS3MessageDeserializerImp>();
             builder.AddTransient<IAWSSQSMessageConsumer, AWSSQSMessageConsumerImp>();
             builder.AddTransient<IAWSSQSPoller, AWSSQSPollerImp>();
+            builder.AddTransient<IAWSSQSKeySanitizer, AWSSQSKeySanitizerImp>();
         }
     }
 }

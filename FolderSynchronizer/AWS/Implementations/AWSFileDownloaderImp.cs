@@ -80,6 +80,8 @@ namespace FolderSynchronizer.AWS.Implementations
         private string SaveFile(string fileKey, byte[] fileContents)
         {
             var path = Path.Combine(LocalFolderPath, fileKey);
+            var file = new FileInfo(path);
+            file.Directory.Create();
             File.WriteAllBytes(path, fileContents);
 
             return path;

@@ -4,16 +4,19 @@ using FolderSynchronizer.AWS.Abstractions;
 using FolderSynchronizer.AWS.Data;
 using FolderSynchronizer.AWS.Enums;
 using FolderSynchronizer.AWS.Exceptions;
+using System.Text.RegularExpressions;
 
 namespace FolderSynchronizer.AWS.Implementations
 {
     public class AWSSQSAutomatedS3MessageDeserializerImp : IAWSSQSAutomatedS3MessageDeserializer
     {
         private IJsonSerializer Serializer { get; set; }
+        private IAWSSQSKeySanitizer KeySanitizer { get; set; }
 
-        public AWSSQSAutomatedS3MessageDeserializerImp(IJsonSerializer serializer)
+        public AWSSQSAutomatedS3MessageDeserializerImp(IJsonSerializer serializer, IAWSSQSKeySanitizer keySanitizer)
         {
             Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
+            KeySanitizer = keySanitizer ?? throw new ArgumentNullException(nameof(keySanitizer));
         }
 
         public S3MessageData Deserialize(Message message)
@@ -48,31 +51,13 @@ namespace FolderSynchronizer.AWS.Implementations
             {
                 BucketName = record.S3.Bucket.Name,
                 Timestamp = DateTime.Parse(record.EventTime),
-                Key = SanitizeKey(record.S3.Object.Key),
+                Key = KeySanitizer.SanitizeKeyFromSQS(record.S3.Object.Key),
                 Action = ConvertEventNameToS3Action(record.EventName),
                 UserPrincipalId = record.UserIdentity.PrincipalId
             };
 
             return result;
         }
-
-        private string SanitizeKey(string key)
-        {
-            foreach (var pair in ReplacementPairs)
-            {
-                key = key.Replace(pair.Item1, pair.Item2);
-            }
-
-            return key;
-        }
-
-        private Tuple<string, string>[] ReplacementPairs => new[]
-        {
-            Tuple.Create("+", " "),
-            Tuple.Create("%26", "&"),
-            Tuple.Create("%28", "("),
-            Tuple.Create("%29", ")")
-        };
 
         public const string UploadEventName = "ObjectCreated:Put";
         public const string DeleteEventName = "ObjectRemoved:Delete";

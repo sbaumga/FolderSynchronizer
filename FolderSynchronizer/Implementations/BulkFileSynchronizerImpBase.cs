@@ -30,13 +30,10 @@ namespace FolderSynchronizer.Implementations
         {
             var syncStatus = await FileSyncChecker.GetSynchronizationStatusForFilesAsync();
 
-            var syncTasks = new List<Task>();
             foreach (var file in syncStatus)
             {
-                syncTasks.Add(TakeActionOnFileIfNeeded(file));
+                await TakeActionOnFileIfNeeded(file);
             }
-
-            Task.WaitAll(syncTasks.ToArray());
         }
 
         private async Task TakeActionOnFileIfNeeded(FileSynchronizationStatusData file)

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FolderSynchronizer.Tests.AWS.AWSActionTakerImpTests
 {
-    public class DoUploadActionTests : AWSActionTakerImpTestBase<PutObjectRequest, PutObjectResponse>
+    public class DoUploadActionTests : AWSS3ActionTakerImpTestBase<PutObjectRequest, PutObjectResponse>
     {
         protected override Expression<Func<IAmazonS3, Task<PutObjectResponse>>> ClientFuncSetup(PutObjectRequest request)
             => s => s.PutObjectAsync(request, It.IsAny<CancellationToken>());

@@ -1,32 +1,12 @@
-﻿using FolderSynchronizer.AWS.Data;
+﻿using Amazon.S3;
 using FolderSynchronizer.AWS.Implementations;
 using NUnit.Framework;
-using Shouldly;
 
 namespace FolderSynchronizer.Tests.AWS.AWSClientCreatorImpTests
 {
-    [TestFixture]
-    public class GetS3ClientTests
+    public class GetS3ClientTests : GetClientTestBase<IAmazonS3>
     {
-        [Test]
-        public void HappyPathTest()
-        {
-            var clientCreator = CreateAWSClientCreator("TestAccessKey", "TestSecretKey");
-
-            var client = clientCreator.GetS3Client();
-
-            client.ShouldNotBeNull();
-        }
-
-        private AWSClientCreatorImp CreateAWSClientCreator(string accessKey, string secretKey)
-        {
-            var configData = new AWSConfigData()
-            {
-                AccessKey = accessKey,
-                SecretKey = secretKey
-            };
-
-            return new AWSClientCreatorImp(configData);
-        }
+        protected override IAmazonS3 CreateClient(AWSClientCreatorImp clientCreator)
+            => clientCreator.GetS3Client();
     }
 }
