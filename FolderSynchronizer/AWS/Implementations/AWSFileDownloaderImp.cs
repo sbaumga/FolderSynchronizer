@@ -50,14 +50,10 @@ namespace FolderSynchronizer.AWS.Implementations
                 var request = CreateGetObjectRequest(fileKey);
                 var response = await ActionTaker.DoGetObjectAsync(request);
 
-                using (var responseStream = response.ResponseStream)
-                {
-                    using (var bReader = new BinaryReader(responseStream))
-                    {
-                        var bytes = bReader.ReadBytes((int)responseStream.Length);
-                        return bytes;
-                    }
-                }
+                using var responseStream = response.ResponseStream;
+                using var bReader = new BinaryReader(responseStream);
+                var bytes = bReader.ReadBytes((int)responseStream.Length);
+                return bytes;
             }
             catch (AggregateException ex)
             {
@@ -84,7 +80,7 @@ namespace FolderSynchronizer.AWS.Implementations
             file.Directory.Create();
             File.WriteAllBytes(path, fileContents);
 
-            return path;
+            return file.FullName;
         }
     }
 }

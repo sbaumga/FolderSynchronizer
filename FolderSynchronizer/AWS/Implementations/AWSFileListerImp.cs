@@ -40,7 +40,8 @@ namespace FolderSynchronizer.AWS.Implementations
         {
             var request = new ListObjectsV2Request
             {
-                BucketName = BucketName
+                BucketName = BucketName,
+                MaxKeys = 10000
             };
 
             var response = await ActionTaker.DoListActionAsync(request);
@@ -55,16 +56,16 @@ namespace FolderSynchronizer.AWS.Implementations
 
         public async Task<IEnumerable<FileData>> GetFileDataAsync()
         {
-            var data = await GetAndActOnS3Objects(o => MakeFileDataFroms3Object(o));
+            var data = await GetAndActOnS3Objects(o => MakeFileDataFromS3Object(o));
             return data;
         }
 
-        private FileData MakeFileDataFroms3Object(S3Object s3Object)
+        private FileData MakeFileDataFromS3Object(S3Object s3Object)
         {
             var data = new FileData
             {
                 Path = s3Object.Key,
-                LastModifiedDate = s3Object.LastModified.ToUniversalTime(),
+                LastModifiedDate = s3Object.LastModified,
             };
             return data;
         }

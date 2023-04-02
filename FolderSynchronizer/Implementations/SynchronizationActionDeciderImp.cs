@@ -20,7 +20,7 @@ namespace FolderSynchronizer.Implementations
 
             if (file.SourceData.LastModifiedDate > file.DestinationData.LastModifiedDate)
             {
-                return FileSynchronizationAction.Upload;
+                //return FileSynchronizationAction.Upload;
             }
 
             return FileSynchronizationAction.None;

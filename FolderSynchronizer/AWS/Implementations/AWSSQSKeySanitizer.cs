@@ -7,6 +7,8 @@ namespace FolderSynchronizer.AWS.Implementations
     {
         public string SanitizeKeyFromSQS(string key)
         {
+            key = key.Replace("+", " ");
+
             var regex = new Regex("((?:%[A-F0-9]{2})+)");
 
             var matches = regex.Matches(key);
@@ -20,8 +22,6 @@ namespace FolderSynchronizer.AWS.Implementations
                     key = key.Replace(capture.Value, character);
                 }
             }
-
-            key = key.Replace("+", " ");
 
             return key;
         }

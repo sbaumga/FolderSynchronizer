@@ -9,6 +9,9 @@ namespace FolderSynchronizer.Implementations
             var sourceFiles = await GetSourceFilesAsync();
             var destinationFiles = (await GetDestinationFilesAsync()).ToList();
 
+            var memeyHellSrc = sourceFiles.SingleOrDefault(f => f.Path.Contains("Memey Hell"));
+            var memeyHellDest = destinationFiles.SingleOrDefault(f => f.Path.Contains("Memey Hell"));
+
             var syncData = new List<FileSynchronizationStatusData>();
             foreach (var localFile in sourceFiles)
             {
